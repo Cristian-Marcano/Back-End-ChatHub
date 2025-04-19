@@ -1,0 +1,26 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "node build/main.js",
+    "clean": "rimraf dist",
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc -w",
+    "serve": "node -w dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Cristian-Marcano",
+  "license": "ISC",
+  "description": "Backend for chathub (messenger)",
+  "dependencies": {
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.1",
+    "@types/node": "22.14.1",
+    "rimraf": "6.0.1",
+    "typescript": "5.8.3"
+  }
+}
