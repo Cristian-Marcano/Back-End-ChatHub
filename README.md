@@ -35,6 +35,9 @@ npm run start
 - **NodeJS**
 - **MySQL**
 
+> [!NOTE]
+> La arquitectura del proyecto debe ser por **MVC**.
+
 > [!TIP]
 > Para apoyar en el repositorio debes aplicar:
 > 1. <strong>Conventional Commits</strong>.
