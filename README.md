@@ -40,4 +40,4 @@ npm run start
 
 > [!TIP]
 > Para apoyar en el repositorio debes aplicar:
-> 1. <strong>Conventional Commits</strong>.
+> 1. **Conventional Commits**.
