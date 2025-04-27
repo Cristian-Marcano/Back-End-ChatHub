@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="toast.css">
     <title>ChatHub</title>
 </head>
 <body>
     <main>
-        <section class="chat">
+        <div id="toast-container"></div>
+        <section class="chat none">
             <ul class="messages">
                 <li class="message">
                     Example text
@@ -23,9 +25,35 @@
                     Other message for try line wrap text in chat.
                 </li>
             </ul>
-            <form id="form">
-                <input type="text" id="input">
-                <button>Send</button>
+            <form class="form-message" id="form">
+                <input type="text" class="input">
+                <button class="send">Send</button>
+            </form>
+        </section>
+        <section class="signup">
+            <h2>Registrarse</h2>
+            <form class="form" id="signUp">
+                <input type="text" name="username" id="username" class="input" placeholder="Username">
+                <input type="email" name="email" id="email" class="input" placeholder="Email">
+                <input type="text" name="password" id="passwordSignUp" class="input" placeholder="Contraseña">
+                <button>Continuar »</button>
+            </form>
+            <button class="btn-login">Tienes Cuenta ? Inicia Sesión</button>
+        </section>
+        <section class="login none">
+            <h2>Iniciar Sesion</h2>
+            <form class="form" id="login">
+                <input type="text" name="user" id="user" class="input" placeholder="Username o Email">
+                <input type="text" name="password" id="passwordLogin" class="input" placeholder="Contraseña">
+                <button>Continuar »</button>
+            </form>
+            <button class="btn-signup">No tienes Cuenta ? Registrate</button>
+        </section>
+        <section class="verify none">
+            <h2>Insertar Codigo</h2>
+            <form class="form" id="verify">
+                <input type="text" name="code" id="code" class="input" placeholder="Codigo: 123456">
+                <button>Continuar »</button>
             </form>
         </section>
     </main>
