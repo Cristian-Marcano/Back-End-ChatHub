@@ -1,14 +1,25 @@
 import z from 'zod'
 
-const userSchemas = z.object({
-    username: z.string({
-        invalid_type_error: 'Username must be a string',
-        required_error: 'Username is required',
-    }).trim().min(4, 'Username must be min length 4'),
-    email: z.string({
-        invalid_type_error: 'Email must be a string',
-        required_error: 'Email is required'
-    }).trim().email('The email sent is not valid'),
+const username = z.string({
+    invalid_type_error: 'Username must be a string',
+    required_error: 'Username is required'
+}).trim()
+
+const email = z.string({
+    invalid_type_error: 'Email must be a string',
+    required_error: 'Email is required'
+}).trim().email('The email sent is not valid')
+
+
+export const usernameAndEmailSchemas = z.object({
+    username: username.optional(),
+    email: email.optional()
+})
+
+
+export const userSchemas = z.object({
+    username: username.min(4, 'Username must be min length 4'),
+    email,
     password: z.string({
         invalid_type_error: 'Password must be a string',
         required_error: 'Password is required'
@@ -17,15 +28,30 @@ const userSchemas = z.object({
 
 
 const userPartialSchemas = z.object({
-    ...userSchemas.shape,
-    username: userSchemas.shape.username.optional(),
-    email: userSchemas.shape.email.optional()
+    ...usernameAndEmailSchemas.shape,
+    password: userSchemas.shape.password
 })
 
 export type UserSchema = z.infer<typeof userSchemas>
+
+export type UsernameAndEmailSchema = z.infer<typeof usernameAndEmailSchemas>
 
 export type UserPartialSchema = z.infer<typeof userPartialSchemas>
 
 export const validateUser = (input:object) => userSchemas.safeParse(input)
 
-export const validatePartialUser = (input:object) => userPartialSchemas.safeParse(input)
+export const validateUsernameAndEmail = (input:object) => usernameAndEmailSchemas.refine(
+    (data) => data.username || data.email,
+    {
+        message: 'At least username or email is required',
+        path: ['username']
+    }
+).safeParse(input)
+
+export const validateUserPartial = (input:object) => userPartialSchemas.refine(
+    (data) => data.username || data.email,
+    {
+        message: 'At least username or email is required',
+        path: ['username']
+    }
+).safeParse(input)
