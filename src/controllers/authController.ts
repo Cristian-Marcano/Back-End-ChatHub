@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { validateCodeEmail } from "../schemas/codeEmailSchemas"
-import { validateUser, validatePartialUser, UserSchema } from "../schemas/userSchemas"
+import { validateUser, validateUserPartial, UserSchema } from "../schemas/userSchemas"
 import { AuthService } from "../services/authService"
 
 export class AuthController { 
@@ -60,7 +60,7 @@ export class AuthController {
     }
 
     login = async(req:Request, res:Response): Promise<void> => {
-        const resultUser = validatePartialUser(req.body)
+        const resultUser = validateUserPartial(req.body)
 
         if(!resultUser.success) {
             res.status(422).json({error: JSON.parse(resultUser.error.message)})

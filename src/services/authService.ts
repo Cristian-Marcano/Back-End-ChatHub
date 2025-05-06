@@ -85,7 +85,7 @@ export class AuthService {
 
         if(!isValid) throw new Error('INVALID_CREDENTIALS')
 
-        const token = await assignToken({id})
+        const token = assignToken({id})
         return { token }
     }
 }
