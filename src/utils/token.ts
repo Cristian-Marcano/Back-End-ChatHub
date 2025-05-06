@@ -4,7 +4,7 @@ import { UUID } from 'node:crypto'
 
 const SECRET_KEY = process.env.SECRET_KEY ?? '$mAM4ÑE&r5/*XQL0'
 
-export const assignToken = async({id}: {id:UUID}) => await jwt.sign({id}, SECRET_KEY, {algorithm: 'HS256'})
+export const assignToken = ({id}: {id:UUID}) => jwt.sign({id}, SECRET_KEY, {algorithm: 'HS256'})
 
 
 export const validateAuthorization = (req:Request, res:Response, next:NextFunction) => {
