@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise'
-import { CONFIG } from './keys'
+import { CONFIG_MYSQL } from '../../config/keys'
 
-const connectionConfig = CONFIG
+const connectionConfig = CONFIG_MYSQL
 
 const pool = mysql.createPool(connectionConfig)
 
