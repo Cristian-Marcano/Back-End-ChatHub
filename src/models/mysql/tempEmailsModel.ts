@@ -1,5 +1,5 @@
 import { QueryResult } from "mysql2"
-import pool from "../../config/database"
+import pool from "../../db/mysql"
 import { ITempEmailsModel, TempEmail } from "../../interface/tempEmailsModel"
 import { CodeEmailSchema } from "../../schemas/codeEmailSchemas"
 import { UserSchema } from "../../schemas/userSchemas"
