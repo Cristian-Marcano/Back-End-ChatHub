@@ -3,7 +3,7 @@ import { QueryResult } from "mysql2/promise"
 import { PoolConnection } from "mysql2/promise"
 import pool from "../../db/mysql"
 import { IUserModel, User } from "../../interface/userModel"
-import { UserSchema, UserPartialSchema } from "../../schemas/userSchemas"
+import { UserSchema, UserPartialSchema, UserRefineSchema } from "../../schemas/userSchemas"
 
 class UserModel implements IUserModel {
     async getUser({input}: {input: UserSchema}): Promise<User[]> {
@@ -24,7 +24,7 @@ class UserModel implements IUserModel {
         return users
     }
 
-    async getUserByUsernameOrEmail({input}: {input: UserPartialSchema}): Promise<User[]> {
+    async getUserByUsernameOrEmail({input}: {input: UserRefineSchema}): Promise<User[]> {
         const { username, email } = input
         const sql = 'SELECT BIN_TO_UUID(id) AS id, username, email, keyword, create_at FROM user_account WHERE'
         if(username) {
