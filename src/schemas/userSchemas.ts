@@ -28,7 +28,8 @@ const userSchemas = z.object({
 
 
 const userPartialSchemas = z.object({
-    ...userSchemas.shape,
+    username: userSchemas.shape.username,
+    email: userSchemas.shape.email,
     keyword: userSchemas.shape.password
 }).partial()
 
