@@ -1,6 +1,8 @@
 import { Server, Socket } from "socket.io"
 import { UserService } from "../services/userService"
 import { validatePaginationUsernameAndEmail } from "../schemas/paginationSchemas"
+import { validateUserInfo, validatePartialUserInfo } from "../schemas/userInfoSchemas"
+import { validatePartialUser } from "../schemas/userSchemas"
 
 export class UserController {
     private userService: UserService
@@ -23,6 +25,47 @@ export class UserController {
 
             socket.emit(`${namespace}:results`, {results: users})
         } catch(error:any) {
+            socket.emit('error:server', {message: 'Server error'})
+        }
+    }
+
+    createInfo = async(namespace:string, io: Server, socket: Socket, data: object): Promise<void> => {
+        const resultSchema = validateUserInfo(data)
+
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            const { id } = socket.data
+            await this.userService.createUserInfo({input: resultSchema.data, id})
+
+            socket.emit(`${namespace}:info-created`, {message: 'User info was created'})
+        } catch(error: any) {
+            socket.emit('error:server', {message: 'Server error'})
+        }
+    }
+
+    update = async(namespace:string, io:Server, socket: Socket, data: object): Promise<void> => {
+        const resultUser = validatePartialUser(data), resultUserInfo = validatePartialUserInfo(data)
+
+        if(!resultUser.success || !resultUserInfo.success) {
+            socket.emit('error:validate', {
+                error: JSON.parse(`
+                    ${ (!resultUser.success && !resultUserInfo.success) ? resultUser.error.message + ',' + resultUserInfo.error.message :
+                    (!resultUser.success) ? resultUser.error.message : resultUserInfo.error?.message }
+                `)
+            })
+            return
+        }
+
+        try {
+            const { id } = socket.data
+            await this.userService.updateUser({input: resultUser.data, inputInfo: resultUserInfo.data, id})
+
+            socket.emit(`${namespace}:updated`, {message: 'User was updated'})
+        } catch(error: any) {
             socket.emit('error:server', {message: 'Server error'})
         }
     }
