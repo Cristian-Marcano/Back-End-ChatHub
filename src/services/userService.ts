@@ -31,8 +31,8 @@ export class UserService {
 
     async updateUser({input, inputInfo, id}: {input: UserPartialSchema, inputInfo: UserInfoPartialSchema, id: UUID}) {
         return withTransaction(async(conn) => {
-            this.userModel.updateUser({input, id}, conn)
-            this.userInfoModel.updateUserInfo({input:inputInfo, id}, conn)
+            await this.userModel.updateUser({input, id}, conn)
+            await this.userInfoModel.updateUserInfo({input:inputInfo, id}, conn)
         })
     }
 }
