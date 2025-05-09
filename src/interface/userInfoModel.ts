@@ -1,6 +1,6 @@
 import { UUID } from "node:crypto"
 import { PoolConnection } from "mysql2/promise"
-import { UserFullInfoSchema, UserInfoSchema } from "../schemas/userInfoSchemas"
+import { UserInfoPartialSchema, UserInfoSchema } from "../schemas/userInfoSchemas"
 import { PaginationUsernameAndEmailSchema } from "../schemas/paginationSchemas"
 
 export interface UserInfo {
@@ -22,5 +22,5 @@ export interface IUserInfoModel {
 
     createUserInfo(params: {input: UserInfoSchema, id: UUID}): Promise<void>
 
-    updateUserInfo(params: {input: UserFullInfoSchema, id: UUID}, conn?: PoolConnection): Promise<void>
+    updateUserInfo(params: {input: UserInfoPartialSchema, id: UUID}, conn?: PoolConnection): Promise<void>
 }

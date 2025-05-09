@@ -3,7 +3,7 @@ import { QueryResult } from "mysql2/promise"
 import { PoolConnection } from "mysql2/promise"
 import pool from "../../db/mysql"
 import { IUserInfoModel, UserInfo } from "../../interface/userInfoModel"
-import { UserInfoSchema, UserFullInfoSchema } from "../../schemas/userInfoSchemas"
+import { UserInfoSchema, UserInfoPartialSchema } from "../../schemas/userInfoSchemas"
 import { PaginationUsernameAndEmailSchema } from "../../schemas/paginationSchemas"
 
 class UserInfoModel implements IUserInfoModel {
@@ -29,10 +29,10 @@ class UserInfoModel implements IUserInfoModel {
 
     async createUserInfo({input, id}: {input: UserInfoSchema, id: UUID}): Promise<void> {
         const { full_name, phone, photo } = input
-        await pool.query(`INSERT INTO user_account_info(full_name, phone, photo, user_id) VALUES (?,?,?,?)`, [full_name, phone, photo, id])
+        await pool.query(`INSERT INTO user_account_info(full_name, phone, photo, user_id) VALUES (?,?,?,UUID_TO_BIN(?))`, [full_name, phone, photo, id])
     }
 
-    async updateUserInfo({input, id}: {input: UserFullInfoSchema, id: UUID}, conn?: PoolConnection): Promise<void> {
+    async updateUserInfo({input, id}: {input: UserInfoPartialSchema, id: UUID}, conn?: PoolConnection): Promise<void> {
         const execute = conn ?? pool
         await execute.query(`UPDATE user_account_info SET ? WHERE user_id = UUID_TO_BIN(?)`, [input, id])
     }

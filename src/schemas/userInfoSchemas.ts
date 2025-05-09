@@ -1,5 +1,4 @@
 import z from 'zod'
-import { userSchemas } from './userSchemas'
 
 const userInfoSchemas = z.object({
     full_name: z.string({
@@ -28,15 +27,14 @@ const userInfoSchemas = z.object({
 })
 
 
-const userFullInfoSchemas = z.object({
-    ...userSchemas.shape,
+const userInfoPartialSchemas = z.object({
     ...userInfoSchemas.shape
-})
+}).partial()
 
 export type UserInfoSchema = z.infer<typeof userInfoSchemas>
 
-export type UserFullInfoSchema = z.infer<typeof userFullInfoSchemas>
+export type UserInfoPartialSchema = z.infer<typeof userInfoPartialSchemas>
 
 export const validateUserInfo = (input:object) => userInfoSchemas.safeParse(input)
 
-export const validatePartialUserFullInfo = (input:object) => userFullInfoSchemas.partial().safeParse(input)
+export const validatePartialUserInfo = (input:object) => userInfoPartialSchemas.safeParse(input)
