@@ -1,6 +1,6 @@
 import { UUID } from "node:crypto"
 import { PoolConnection } from "mysql2/promise"
-import { UserSchema, UserPartialSchema } from "../schemas/userSchemas"
+import { UserSchema, UserPartialSchema, UserRefineSchema } from "../schemas/userSchemas"
 
 export interface User {
     id: UUID,
@@ -17,9 +17,9 @@ export interface IUserModel {
 
     getUserById(params: {id: UUID}): Promise<User[]>
 
-    getUserByUsernameOrEmail(params: {input: UserPartialSchema}): Promise<User[]>
+    getUserByUsernameOrEmail(params: {input: UserRefineSchema}): Promise<User[]>
 
     createUser(params: {input: UserSchema}): Promise<void>
 
-    updateUser(params: {input: User, id:UUID}, conn?: PoolConnection): Promise<void>
+    updateUser(params: {input: UserPartialSchema, id:UUID}, conn?: PoolConnection): Promise<void>
 }

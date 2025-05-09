@@ -2,7 +2,7 @@ import { IModels } from "../interface/models"
 import { ITempEmailsModel } from "../interface/tempEmailsModel"
 import { IUserModel } from "../interface/userModel"
 import { CodeEmailSchema } from "../schemas/codeEmailSchemas"
-import { UserPartialSchema, UserSchema } from "../schemas/userSchemas"
+import { UserRefineSchema, UserSchema } from "../schemas/userSchemas"
 import { genereteHashedPassword, validateHashedPassword } from "../utils/password"
 import { assignToken } from "../utils/token"
 import { mailTo } from "../utils/mailTo"
@@ -74,7 +74,7 @@ export class AuthService {
         throw new Error('CODE_INVALID')
     }
 
-    async loginUser({input}: {input: UserPartialSchema}) {
+    async loginUser({input}: {input: UserRefineSchema}) {
         const user = await this.userModel.getUserByUsernameOrEmail({input})
 
         if(user.length === 0) throw new Error('INVALID_CREDENTIALS')

@@ -46,7 +46,7 @@ class UserModel implements IUserModel {
         await pool.query(`INSERT INTO user_account(username, keyword, email) VALUE (?, ?, ?)`,[username, password, email])
     }
 
-    async updateUser({input, id}: {input: User, id:UUID}, conn?: PoolConnection): Promise<void> {
+    async updateUser({input, id}: {input: UserPartialSchema, id:UUID}, conn?: PoolConnection): Promise<void> {
         const execute = conn ?? pool
         await execute.query(`UPDATE user_account SET ? WHERE id = UUID_TO_BIN(?)`, [input, id])
     }

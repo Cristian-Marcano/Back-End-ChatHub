@@ -17,7 +17,7 @@ export const usernameAndEmailSchemas = z.object({
 })
 
 
-export const userSchemas = z.object({
+const userSchemas = z.object({
     username: username.min(4, 'Username must be min length 4'),
     email,
     password: z.string({
@@ -28,6 +28,12 @@ export const userSchemas = z.object({
 
 
 const userPartialSchemas = z.object({
+    ...userSchemas.shape,
+    keyword: userSchemas.shape.password
+}).partial()
+
+
+const userRefineSchemas = z.object({
     ...usernameAndEmailSchemas.shape,
     password: userSchemas.shape.password
 })
@@ -38,7 +44,11 @@ export type UsernameAndEmailSchema = z.infer<typeof usernameAndEmailSchemas>
 
 export type UserPartialSchema = z.infer<typeof userPartialSchemas>
 
+export type UserRefineSchema = z.infer<typeof userRefineSchemas>
+
 export const validateUser = (input:object) => userSchemas.safeParse(input)
+
+export const validatePartialUser = (input:object) => userPartialSchemas.safeParse(input)
 
 export const validateUsernameAndEmail = (input:object) => usernameAndEmailSchemas.refine(
     (data) => data.username || data.email,
@@ -48,7 +58,7 @@ export const validateUsernameAndEmail = (input:object) => usernameAndEmailSchema
     }
 ).safeParse(input)
 
-export const validateUserPartial = (input:object) => userPartialSchemas.refine(
+export const validateUserRefine = (input:object) => userRefineSchemas.refine(
     (data) => data.username || data.email,
     {
         message: 'At least username or email is required',
