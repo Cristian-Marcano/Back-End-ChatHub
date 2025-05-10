@@ -12,11 +12,11 @@ export function userEventsHandler(namespace:string, io: Server, socket: Socket, 
         userController.search(namespace, io, socket, data)
     })
 
-    socket.on(`${namespace}:update`, (data) => {
-
+    socket.on(`${namespace}:create-info`, (data) => {
+        userController.createInfo(namespace, io, socket, data)
     })
 
-    socket.on(`${namespace}:create-info`, (data) => {
-
+    socket.on(`${namespace}:update`, (data) => {
+        userController.update(namespace, io, socket, data)
     })
 }
