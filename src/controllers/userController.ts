@@ -51,12 +51,14 @@ export class UserController {
         const resultUser = validatePartialUser(data), resultUserInfo = validatePartialUserInfo(data)
 
         if(!resultUser.success || !resultUserInfo.success) {
-            socket.emit('error:validate', {
-                error: JSON.parse(`
-                    ${ (!resultUser.success && !resultUserInfo.success) ? resultUser.error.message + ',' + resultUserInfo.error.message :
-                    (!resultUser.success) ? resultUser.error.message : resultUserInfo.error?.message }
-                `)
-            })
+            const errors = []
+            if(!resultUser.success)
+                errors.push(...JSON.parse(resultUser.error.message))
+
+            if(!resultUserInfo.success)
+                errors.push(...JSON.parse(resultUserInfo.error.message))
+
+            socket.emit('error:validate', {error: errors})
             return
         }
 
