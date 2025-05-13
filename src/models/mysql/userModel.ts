@@ -1,6 +1,5 @@
 import { UUID } from "node:crypto"
-import { QueryResult } from "mysql2/promise"
-import { PoolConnection } from "mysql2/promise"
+import { PoolConnection, QueryResult } from "mysql2/promise"
 import pool from "../../db/mysql"
 import { IUserModel, User } from "../../interface/userModel"
 import { UserSchema, UserPartialSchema, UserRefineSchema } from "../../schemas/userSchemas"
