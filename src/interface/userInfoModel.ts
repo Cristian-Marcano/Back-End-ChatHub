@@ -8,11 +8,11 @@ export interface UserInfo {
     username: string,
     email: string,
     create_at: Date,
-    idInfo?: number,
-    full_name?: string,
-    phone?: string,
-    photo?: string,
-    user_id?: UUID
+    idInfo: number|null,
+    full_name: string|null,
+    phone: string|null,
+    photo: string|null,
+    about: string|null
 }
 
 export interface IUserInfoModel {

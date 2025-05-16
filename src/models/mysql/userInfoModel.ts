@@ -9,7 +9,7 @@ import { PaginationUsernameAndEmailSchema } from "../../schemas/paginationSchema
 class UserInfoModel implements IUserInfoModel {
     async getUserInfoById({id}: {id: UUID}): Promise<UserInfo[]> {
         const [users] = await pool.query(`SELECT BIN_TO_UUID(ua.id) AS id, ua.username, ua.email, ua.create_at, uai.id AS idInfo, uai.full_name, uai.phone, uai.photo, 
-                                            BIN_TO_UUID(uai.user_id) AS user_id FROM user_account AS ua LEFT JOIN user_account_info AS uai ON ua.id = uai.user_id
+                                            about FROM user_account AS ua LEFT JOIN user_account_info AS uai ON ua.id = uai.user_id
                                             WHERE ua.id = UUID_TO_BIN(?)`, [id]) as QueryResult as [UserInfo[]]
         return users
     }
@@ -17,7 +17,7 @@ class UserInfoModel implements IUserInfoModel {
     async getUsersInfo({input, id}: {input: PaginationUsernameAndEmailSchema, id: UUID}): Promise<UserInfo[]> {
         const { username, email, page, pageSize } = input
         const sql = `SELECT BIN_TO_UUID(ua.id) AS id, ua.username, ua.email, ua.create_at, uai.id AS idInfo, uai.full_name, uai.phone, uai.photo, 
-                        BIN_TO_UUID(uai.user_id) AS user_id FROM user_account AS ua LEFT JOIN user_account_info AS uai ON ua.id = uai.user_id
+                        about FROM user_account AS ua LEFT JOIN user_account_info AS uai ON ua.id = uai.user_id
                         WHERE`
         if(username) {
             const [users] = await pool.query(`${sql} ua.username REGEXP ? AND ua.id <> UUID_TO_BIN(?) LIMIT ?, ?`, [username, id, page, pageSize]) as QueryResult as [UserInfo[]]
@@ -28,8 +28,8 @@ class UserInfoModel implements IUserInfoModel {
     }
 
     async createUserInfo({input, id}: {input: UserInfoSchema, id: UUID}): Promise<void> {
-        const { full_name, phone, photo } = input
-        await pool.query(`INSERT INTO user_account_info(full_name, phone, photo, user_id) VALUES (?,?,?,UUID_TO_BIN(?))`, [full_name, phone, photo, id])
+        const { full_name, phone, photo, about } = input
+        await pool.query(`INSERT INTO user_account_info(full_name, phone, photo, about, user_id) VALUES (?,?,?,?,UUID_TO_BIN(?))`, [full_name, phone, photo, about, id])
     }
 
     async updateUserInfo({input, id}: {input: UserInfoPartialSchema, id: UUID}, conn?: PoolConnection): Promise<void> {

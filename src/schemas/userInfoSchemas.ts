@@ -12,7 +12,7 @@ const userInfoSchemas = z.object({
     photo: z.string({
         invalid_type_error: 'Photo must be a string',
         required_error: 'Photo is required',
-    }).trim().url().refine((urlStr) => {
+    }).trim().max(2000, 'Photo must be max length').url().refine((urlStr) => {
         try {
             const url = new URL(urlStr)
             return (
@@ -23,7 +23,10 @@ const userInfoSchemas = z.object({
         } catch {
             return false
         }
-    })
+    }),
+    about: z.string({
+        invalid_type_error: 'About must be a string'
+    }).trim().max(200, 'About must be max length 200').default('')
 })
 
 
