@@ -7,7 +7,8 @@ export interface Friendship {
     id: number,
     primary_user_id: UUID,
     secondary_user_id: UUID,
-    state: string,
+    primary_state: string,
+    secondary_state: string,
     create_at: Date,
     update_at: Date|null
 }
@@ -37,7 +38,9 @@ export interface IFriendshipModel {
 
     createFriendship(params: {input: FriendshipShema}, conn?: PoolConnection): Promise<void>
 
-    updateFriendship(params: {input: State, id: number}, conn?: PoolConnection): Promise<void>
+    updateFriendshipPrimaryState(params: {input: State, id: number}, conn?: PoolConnection): Promise<void>
+
+    updateFriendshipSecondaryState(params: {input: State, id: number}, conn?: PoolConnection): Promise<void>
 
     removeFriendship(params: {id: number}): Promise<void>
 }

@@ -20,7 +20,8 @@ const state = z.enum(
 const friendshipSchemas = z.object({
     primary_user_id: user_id,
     secondary_user_id: user_id,
-    state: state.default('pending')
+    primary_state: state.default('pending'),
+    secondary_state: state.default('pending')
 })
 
 export type UserId = z.infer<typeof user_id>
