@@ -32,9 +32,7 @@ export type FriendshipGeneral = PrimaryUserFriend & SecondaryUserFriend & Friend
 export interface IFriendshipModel {
     getFriendshipById(params: {id: number}): Promise<FriendshipGeneral[]>
 
-    getFriendshipsByPrimaryUserId(params: {id: UUID}): Promise<FriendshipUser[]>
-
-    getFriendshipsBySecondaryUserId(params: {id: UUID}): Promise<FriendshipUser[]>
+    getFriendshipsByUserId(params: {state: State, id: UUID}): Promise<FriendshipUser[]>
 
     createFriendship(params: {input: FriendshipShema}, conn?: PoolConnection): Promise<void>
 
