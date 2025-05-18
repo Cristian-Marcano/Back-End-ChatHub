@@ -23,7 +23,7 @@ const userInfoSchemas = z.object({
         } catch {
             return false
         }
-    }),
+    }).default(''),
     about: z.string({
         invalid_type_error: 'About must be a string'
     }).trim().max(200, 'About must be max length 200').default('')
