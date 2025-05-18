@@ -11,9 +11,9 @@ export function friendshipEventsHandler(namespace:string, io: Server, socket: So
     socket.on(`${namespace}:accept`, (data)=> {
     })
 
-    socket.on(`${namespace}:load`, (data)=> {
+    socket.on(`${namespace}:load`, (data)=> { //Muestra las relaciones de amistad ya establecidas
     })
 
-    socket.on(`${namespace}:request`, (data)=> {
+    socket.on(`${namespace}:request`, (data)=> { //Muestra las solicitudes de amistades recibidas
     })
 }
