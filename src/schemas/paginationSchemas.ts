@@ -12,12 +12,28 @@ const paginationSchemas = z.object({
     }).int('PageSize must be a integer').positive('PageSize must be positive').default(10)
 })
 
+const paginationName = z.object({
+    ...paginationSchemas.shape,
+    name: z.string({
+        invalid_type_error: 'Name must be a string',
+        required_error: 'Name is required'
+    }).trim()
+})
+
 const paginationUsernameAndEmailSchemas = z.object({
     ...paginationSchemas.shape,
     ...usernameAndEmailSchemas.shape
 })
 
+export type PaginationSchema = z.infer<typeof paginationSchemas>
+
+export type PaginationNameSchema = z.infer<typeof paginationName>
+
 export type PaginationUsernameAndEmailSchema = z.infer<typeof paginationUsernameAndEmailSchemas>
+
+export const validatePagination = (input:object) => paginationSchemas.safeParse(input)
+
+export const validatePaginationName = (input:object) => paginationName.safeParse(input)
 
 export const validatePaginationUsernameAndEmail = (input:object) => paginationUsernameAndEmailSchemas.refine(
     (data) => data.username || data.email,
