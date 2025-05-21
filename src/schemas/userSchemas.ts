@@ -18,7 +18,7 @@ export const usernameAndEmailSchemas = z.object({
 
 
 const userSchemas = z.object({
-    username: username.min(4, 'Username must be min length 4').max(30, 'Username must be min length 30'),
+    username: username.min(4, 'Username must be min length 4').max(30, 'Username must be max length 30'),
     email: email.max(320, 'Email must be max length 320'),
     password: z.string({
         invalid_type_error: 'Password must be a string',
