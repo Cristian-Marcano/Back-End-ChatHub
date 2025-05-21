@@ -1,6 +1,6 @@
 import { UUID } from "node:crypto"
 import { PoolConnection } from "mysql2/promise"
-import { FriendshipShema, State } from "../schemas/friendshipSchemas"
+import { FriendshipShema, State, StateSchema } from "../schemas/friendshipSchemas"
 import { User } from "./userModel"
 
 export interface Friendship {
@@ -36,9 +36,7 @@ export interface IFriendshipModel {
 
     createFriendship(params: {input: FriendshipShema}, conn?: PoolConnection): Promise<void>
 
-    updateFriendshipPrimaryState(params: {input: State, id: number}, conn?: PoolConnection): Promise<void>
-
-    updateFriendshipSecondaryState(params: {input: State, id: number}, conn?: PoolConnection): Promise<void>
+    updateFriendship(params: {input: StateSchema, id: number}, conn?: PoolConnection): Promise<void>
 
     removeFriendship(params: {id: number}): Promise<void>
 }
