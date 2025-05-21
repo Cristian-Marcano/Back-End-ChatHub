@@ -17,6 +17,12 @@ const state = z.enum(
 })
 
 
+const stateSchemas = z.object({
+    primary_state: state,
+    secondary_state: state
+}).partial()
+
+
 const friendshipSchemas = z.object({
     primary_user_id: user_id,
     secondary_user_id: user_id,
@@ -28,6 +34,8 @@ export type UserId = z.infer<typeof user_id>
 
 export type State = z.infer<typeof state>
 
+export type StateSchema = z.infer<typeof stateSchemas>
+
 export type FriendshipShema = z.infer<typeof friendshipSchemas>
 
 export const validateId = (input: object) => id.safeParse(input)
@@ -35,5 +43,7 @@ export const validateId = (input: object) => id.safeParse(input)
 export const validateUserId = (input: object) => user_id.safeParse(input)
 
 export const validateState = (input: object) => state.safeParse(input)
+
+export const validatePartialStates = (input: object) => stateSchemas.safeParse(input)
 
 export const validateFriendship = (input: object) => friendshipSchemas.safeParse(input)
