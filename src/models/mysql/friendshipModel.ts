@@ -1,7 +1,7 @@
 import { UUID } from "node:crypto"
 import { PoolConnection, QueryResult } from "mysql2/promise"
 import { FriendshipGeneral, FriendshipUser, IFriendshipModel } from "../../interface/friendshipModel"
-import { FriendshipShema, State } from "../../schemas/friendshipSchemas"
+import { FriendshipShema, State, StateSchema } from "../../schemas/friendshipSchemas"
 import pool from "../../db/mysql"
 
 
@@ -30,14 +30,9 @@ class FriendshipModel implements IFriendshipModel {
                             [primary_user_id, secondary_user_id, primary_state, secondary_state])
     }
 
-    async updateFriendshipPrimaryState({input, id}: {input: State, id: number}, conn?: PoolConnection): Promise<void> {
+    async updateFriendship({input, id}: {input: StateSchema, id: number}, conn?: PoolConnection): Promise<void> {
         const execute = conn ?? pool
-        await execute.query('UPDATE friendship SET primary_state = ? WHERE id = ?', [input, id])
-    }
-
-    async updateFriendshipSecondaryState({input, id}: {input: State, id: number}, conn?: PoolConnection): Promise<void> {
-        const execute = conn ?? pool
-        await execute.query('UPDATE friendship SET secondary_state = ? WHERE id = ?', [input, id])
+        await execute.query('UPDATE friendship SET ? WHERE id = ?', [input, id])
     }
 
     async removeFriendship({id}: {id: number}): Promise<void> {
