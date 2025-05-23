@@ -1,5 +1,6 @@
 import z from 'zod'
 import { usernameAndEmailSchemas } from './userSchemas'
+import { chatId } from './messageSchemas'
 
 const paginationSchemas = z.object({
     page: z.number({
@@ -12,7 +13,7 @@ const paginationSchemas = z.object({
     }).int('PageSize must be a integer').positive('PageSize must be positive').default(10)
 })
 
-const paginationName = z.object({
+const paginationNameSchemas = z.object({
     ...paginationSchemas.shape,
     name: z.string({
         invalid_type_error: 'Name must be a string',
@@ -25,15 +26,22 @@ const paginationUsernameAndEmailSchemas = z.object({
     ...usernameAndEmailSchemas.shape
 })
 
+const paginationChatIdSchemas = z.object({
+    ...paginationSchemas.shape,
+    chatId
+})
+
 export type PaginationSchema = z.infer<typeof paginationSchemas>
 
-export type PaginationNameSchema = z.infer<typeof paginationName>
+export type PaginationNameSchema = z.infer<typeof paginationNameSchemas>
 
 export type PaginationUsernameAndEmailSchema = z.infer<typeof paginationUsernameAndEmailSchemas>
 
+export type PaginationChatIdSchema = z.infer<typeof paginationChatIdSchemas>
+
 export const validatePagination = (input:object) => paginationSchemas.safeParse(input)
 
-export const validatePaginationName = (input:object) => paginationName.safeParse(input)
+export const validatePaginationName = (input:object) => paginationNameSchemas.safeParse(input)
 
 export const validatePaginationUsernameAndEmail = (input:object) => paginationUsernameAndEmailSchemas.refine(
     (data) => data.username || data.email,
@@ -42,3 +50,5 @@ export const validatePaginationUsernameAndEmail = (input:object) => paginationUs
         path: ['username']
     }
 ).safeParse(input)
+
+export const validatePaginationChatId = (input:object) => paginationChatIdSchemas.safeParse(input)
