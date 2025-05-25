@@ -1,7 +1,7 @@
 import { UUID } from "node:crypto"
 import { PoolConnection, QueryResult } from "mysql2/promise"
 import { PaginationNameSchema, PaginationSchema } from "../../schemas/paginationSchemas"
-import { NicknamesPartialSchemas } from "../../schemas/friendshipChatSchemas"
+import { FriendshipChatSchema, NicknamesPartialSchema } from "../../schemas/friendshipChatSchemas"
 import { FriendshipChat, IFriendshipChatModel } from "../../interface/friendshipChatModel"
 import pool from "../../db/mysql"
 
@@ -30,12 +30,13 @@ class FriendshipChatModel implements IFriendshipChatModel {
         return chats
     }
 
-    async createFriendshipChat({idFriendship, idChat}: { idFriendship: number, idChat: number }, conn?: PoolConnection): Promise<void> {
+    async createFriendshipChat({input}: { input: FriendshipChatSchema }, conn?: PoolConnection): Promise<void> {
+        const { friendshipId, chatId } = input
         const execute = conn ?? pool
-        await execute.query('INSERT INTO friendship_chat(friendship_id, chat_id) VALUES (?,?)',[idFriendship,idChat])
+        await execute.query('INSERT INTO friendship_chat(friendship_id, chat_id) VALUES (?,?)',[friendshipId, chatId])
     }
 
-    async updateFriendshipChat({input, id}: { input: NicknamesPartialSchemas, id: number }, conn?: PoolConnection): Promise<void> {
+    async updateFriendshipChat({input, id}: { input: NicknamesPartialSchema, id: number }, conn?: PoolConnection): Promise<void> {
         const execute = conn ?? pool
         await execute.query('UPDATE friendship_chat SET ? WHERE id = ?', [input, id])
     }

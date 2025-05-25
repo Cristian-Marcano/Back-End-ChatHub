@@ -16,7 +16,7 @@ export type ChatMessage = Pick<MessageUser, "user_sending_id" | "msg_text" | "ce
     msg_update_at: Date|null
 }
 
-export interface IChat {
+export interface IChatModel {
     getChats(params: {input: PaginationSchema, id: UUID}): Promise<ChatMessage[]>
 
     getChatById(params: {idChat: number, id: UUID}): Promise<ChatMessage[]>

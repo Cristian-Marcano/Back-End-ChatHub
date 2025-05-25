@@ -1,10 +1,10 @@
 import { UUID } from "node:crypto"
-import { ChatMessage, IChat } from "../../interface/chatModel"
+import { ChatMessage, IChatModel } from "../../interface/chatModel"
 import { PoolConnection, QueryResult } from "mysql2/promise"
 import { PaginationNameSchema, PaginationSchema } from "../../schemas/paginationSchemas"
 import pool from "../../db/mysql"
 
-export class ChatModel implements IChat {
+export class ChatModel implements IChatModel {
     async getChats({input, id}: {input: PaginationSchema, id: UUID}): Promise<ChatMessage[]> {
         const { page, pageSize } = input
         const sql = `SELECT c.id AS id, c.create_at AS create_at, IF(f.primary_user_id = UUID_TO_BIN(?), uai1.photo, uai2.photo) AS photo, IF(f.primary_user_id = UUID_TO_BIN(?), 
