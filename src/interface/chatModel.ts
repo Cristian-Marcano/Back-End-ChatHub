@@ -23,7 +23,7 @@ export interface IChatModel {
 
     getChatsByName(params: {input: PaginationNameSchema}): Promise<ChatMessage[]>
 
-    createChat(conn?: PoolConnection): Promise<void>
+    createChat(conn?: PoolConnection): Promise<number>
 
     removeChat(params: {id: number}, conn?: PoolConnection): Promise<void>
 }

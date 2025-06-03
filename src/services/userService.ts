@@ -13,7 +13,9 @@ export class UserService {
 
     constructor({userModel, userInfoModel}: IModels) {
         if(!userModel || !userInfoModel)
-            throw new Error(`${(!userModel && !userInfoModel) ? 'userModel and userInfoModel': (!userModel) ? 'userModel' : 'userInfoModel'} is required in UserService`)
+            throw new Error(`
+                ${(!userModel && !userInfoModel) ? 'userModel and userInfoModel': (!userModel) ? 'userModel' : 'userInfoModel'} is required in UserService
+            `)
         
         this.userModel = userModel
         this.userInfoModel = userInfoModel
