@@ -2,7 +2,7 @@ import { UUID } from "node:crypto"
 import { IModels } from "../interface/models" 
 import { IFriendshipModel } from "../interface/friendshipModel" 
 import { withTransaction } from "../db/mysql/transaction"
-import { FriendshipShema, State, StateSchema } from "../schemas/friendshipSchemas" 
+import { FriendshipShema, State, StateSchema, UserId } from "../schemas/friendshipSchemas" 
 import { FriendshipChatSchema } from "../schemas/friendshipChatSchemas"
 import { IUserInfoModel } from "../interface/userInfoModel"
 import { IFriendshipChatModel } from "../interface/friendshipChatModel"
@@ -61,8 +61,7 @@ export class FriendshipService {
         return await this.friendshipModel.getFriendshipsByUserId({ state, id })
     }
 
-    async infoUserSecondary({ id }: {id: any}){
-        const id_UUID:UUID = id
-        return await this.userInfoModel.getUserInfoById({ id:id_UUID })
+    async infoUserSecondary({ id }: {id: UserId}){
+        return await this.userInfoModel.getUserInfoById({ id })
     }
 }
