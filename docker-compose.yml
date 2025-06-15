@@ -5,10 +5,11 @@ services:
     image: mysql:8.0
     container_name: chathub-mysql-db
     environment:
+      MYSQL_DATABASE: ${DB:-chathub}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-      MYSQL_DATABASE: chathub
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     volumes:
       # Montamos la carpeta de scripts SQL. Docker los ejecutará en orden alfabético al iniciar por primera vez.
       - ./src/db/mysql/scripts:/docker-entrypoint-initdb.d
