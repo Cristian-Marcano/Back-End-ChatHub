@@ -1,0 +1,10 @@
+SHOW variables LIKE 'event_scheduler';
+
+SET GLOBAL event_scheduler = ON;
+
+CREATE EVENT IF NOT EXISTS delete_expired_emails
+ON SCHEDULE EVERY 6 HOUR
+STARTS CURRENT_TIMESTAMP + INTERVAL 1 MINUTE
+DO
+DELETE FROM temp_emails
+WHERE create_at < NOW() - INTERVAL 10 MINUTE;

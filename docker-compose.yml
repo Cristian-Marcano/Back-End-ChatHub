@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  chathub-mysql-db:
+    image: mysql:8.0
+    container_name: chathub-mysql-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: chathub
+    ports:
+      - "3306:3306"
+    volumes:
+      # Montamos la carpeta de scripts SQL. Docker los ejecutará en orden alfabético al iniciar por primera vez.
+      - ./src/db/mysql/scripts:/docker-entrypoint-initdb.d
+      # Volumen para persistir los datos de la base de datos
+      - chathub_mysql_data:/var/lib/mysql
+
+volumes:
+  chathub_mysql_data:
