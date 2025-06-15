@@ -62,6 +62,6 @@ export class FriendshipService {
     }
 
     async infoUserSecondary({ id }: {id: UserId}){
-        return await this.userInfoModel.getUserInfoById({ id })
+        return await this.userInfoModel.getUserInfoById({ id: id as UUID })
     }
 }
