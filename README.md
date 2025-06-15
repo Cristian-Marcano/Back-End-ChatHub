@@ -5,29 +5,29 @@ Proyecto en desarrollo de un sistema de mensajeria (**messenger**), dirigido a l
 
 ## Instalar Dependencias
 ```
-npm install
+pnpm install
 ```
 
 ## Transpilar Proyecto como desarrollador
 ```
-npm run dev
+pnpm dev
 ```
 
 ## Ejecutar Proyecto como desarrollador
 ```
-npm run serve
+pnpm serve
 ```
 
 ## Eliminar Archivos transpilados si hubo un cambio en la arquitectura
 
 ```
-npm run clean
+pnpm clean
 ```
 
 ## Transpilar y Ejecutar Proyecto para producción
 ```
-npm run build
-npm run start
+pnpm build
+pnpm start
 ```
 
 ### Herramientas

@@ -10,6 +10,10 @@ import { socketEventHandler } from './socket'
 import { userModel } from './models/mysql/userModel'
 import { userInfoModel } from './models/mysql/userInfoModel'
 import { tempEmailsModel } from './models/mysql/tempEmailsModel'
+import { chatModel } from './models/mysql/chatModel'
+import { messageModel } from './models/mysql/messageModel'
+import { friendshipModel } from './models/mysql/friendshipModel'
+import { friendshipChatModel } from './models/mysql/friendshipChatModel'
 import ip from './middlewares/internalIP'
 
 
@@ -33,7 +37,14 @@ export function createApp():void {
 
     io.on('connection', (socket) => {
         console.log('New connection for client -> ', socket.data)
-        socketEventHandler(io, socket, {userModel, userInfoModel})
+        socketEventHandler(io, socket, {
+            userModel, 
+            userInfoModel,
+            chatModel,
+            messageModel,
+            friendshipModel,
+            friendshipChatModel
+        })
     })
 
     server.listen(PORT, ()=> console.log(`\nServer listen on Port:\n\n\tLocal:   http://localhost:${PORT}\n\n\tNetwork: http://${ip}:${PORT}\n`))
