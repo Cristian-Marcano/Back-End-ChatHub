@@ -63,7 +63,7 @@ export class ChatController {
 
         try {
             await this.chatService.sendMessageChat({input: resultSchema.data})
-            socket.emit(`${namespace}:newMessage`, {message: `New message from: ${id}`})
+            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:newMessage`, {message: `New message from: ${id}`})
 
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})

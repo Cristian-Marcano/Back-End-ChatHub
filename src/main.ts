@@ -33,6 +33,8 @@ export async function createApp(): Promise<void> {
 
     io.on('connection', (socket) => {
         console.log('New connection for client -> ', socket.data)
+        // El usuario se une a una sala con su propio ID para recibir eventos directos
+        socket.join(socket.data.id)
         socketEventHandler(io, socket, models)
     })
 

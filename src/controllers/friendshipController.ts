@@ -26,7 +26,7 @@ export class FriendshipController {
             const data_secondary_user = await this.friendshipService.infoUserSecondary({id: secondary_user_id })
 
             socket.emit(`${namespace}:received`, {message: 'Server registered friendship'})
-            socket.emit(`${namespace}:${secondary_user_id}`, {results: data_secondary_user})
+            io.to(secondary_user_id).emit(`${namespace}:newRequest`, {results: data_secondary_user})
 
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})
