@@ -7,17 +7,10 @@ import { corsMiddleware } from './middlewares/cors'
 import { authMiddleware } from './middlewares/auth'
 import { createAuthRouter } from './routes/authRoutes'
 import { socketEventHandler } from './socket'
-import { userModel } from './models/mysql/userModel'
-import { userInfoModel } from './models/mysql/userInfoModel'
-import { tempEmailsModel } from './models/mysql/tempEmailsModel'
-import { chatModel } from './models/mysql/chatModel'
-import { messageModel } from './models/mysql/messageModel'
-import { friendshipModel } from './models/mysql/friendshipModel'
-import { friendshipChatModel } from './models/mysql/friendshipChatModel'
+import { getModels } from './models'
 import ip from './middlewares/internalIP'
 
-
-export function createApp():void {
+export async function createApp(): Promise<void> {
     const app = express()
 
     const PORT = process.env.PORT ?? 3001
@@ -28,7 +21,10 @@ export function createApp():void {
     app.use(express.static(join(process.cwd(), '/client')))
     app.disable('x-powered-by')
 
-    app.use('/', createAuthRouter({userModel, tempEmailsModel}))
+    // Obtenemos los modelos dependiendo de la DB configurada en .env
+    const models = await getModels()
+
+    app.use('/', createAuthRouter(models))
     
     const server = createServer(app)
 
@@ -37,17 +33,13 @@ export function createApp():void {
 
     io.on('connection', (socket) => {
         console.log('New connection for client -> ', socket.data)
-        socketEventHandler(io, socket, {
-            userModel, 
-            userInfoModel,
-            chatModel,
-            messageModel,
-            friendshipModel,
-            friendshipChatModel
-        })
+        socketEventHandler(io, socket, models)
     })
 
     server.listen(PORT, ()=> console.log(`\nServer listen on Port:\n\n\tLocal:   http://localhost:${PORT}\n\n\tNetwork: http://${ip}:${PORT}\n`))
 }
 
-createApp()
+createApp().catch((error) => {
+    console.error('Failed to start application:', error)
+    process.exit(1)
+})
