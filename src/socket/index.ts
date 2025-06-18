@@ -4,19 +4,48 @@ import { userEventsHandler } from "./userEvents"
 import { chatEventsHandler } from "./chatEvents"
 import { friendshipEventsHandler } from "./friendshipEvents"
 
+import { UserService } from "../services/userService"
+import { UserController } from "../controllers/userController"
+import { ChatService } from "../services/chatService"
+import { ChatController } from "../controllers/chatController"
+import { FriendshipService } from "../services/friendshipService"
+import { FriendshipController } from "../controllers/friendshipController"
+
+let userController: UserController | null = null
+let chatController: ChatController | null = null
+let friendshipController: FriendshipController | null = null
+
 export function socketEventHandler(
     io: Server, 
     socket: Socket, 
-    {
-        userModel, 
-        userInfoModel,
-        chatModel,
-        messageModel,
-        friendshipModel,
-        friendshipChatModel
-    }: IModels
+    models: IModels
 ) {
-    userEventsHandler('user', io, socket, {userModel, userInfoModel})
-    chatEventsHandler('chat', io, socket, {chatModel, messageModel})
-    friendshipEventsHandler('friendship', io, socket, {friendshipChatModel, friendshipModel, chatModel})
+    if (!userController) {
+        const userService = new UserService({
+            userModel: models.userModel, 
+            userInfoModel: models.userInfoModel
+        })
+        userController = new UserController({userService})
+    }
+    
+    if (!chatController) {
+        const chatService = new ChatService({
+            chatModel: models.chatModel, 
+            messageModel: models.messageModel
+        })
+        chatController = new ChatController({chatService})
+    }
+
+    if (!friendshipController) {
+        const friendshipService = new FriendshipService({
+            chatModel: models.chatModel,
+            friendshipChatModel: models.friendshipChatModel, 
+            friendshipModel: models.friendshipModel
+        })
+        friendshipController = new FriendshipController({friendshipService})
+    }
+
+    userEventsHandler('user', io, socket, userController)
+    chatEventsHandler('chat', io, socket, chatController)
+    friendshipEventsHandler('friendship', io, socket, friendshipController)
 }

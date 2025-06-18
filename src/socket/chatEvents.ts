@@ -1,13 +1,7 @@
 import { Server, Socket } from "socket.io"
-import { IModels } from "../interface/models"
-import { FriendshipController } from "../controllers/friendshipController"
-import { ChatService } from "../services/chatService" 
 import { ChatController } from "../controllers/chatController"
 
-export function chatEventsHandler(namespace:string, io: Server, socket: Socket, {chatModel,messageModel}: IModels) {
-
-    const chatService = new ChatService({chatModel, messageModel})
-    const chatController = new ChatController({chatService})
+export function chatEventsHandler(namespace:string, io: Server, socket: Socket, chatController: ChatController) {
 
     socket.on(`${namespace}:getAll`, (data)=> {
         chatController.getAll(namespace, io, socket, data)

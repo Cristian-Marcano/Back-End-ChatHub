@@ -1,12 +1,7 @@
 import { Server, Socket } from "socket.io"
-import { IModels } from "../interface/models"
 import { FriendshipController } from "../controllers/friendshipController"
-import { FriendshipService } from "../services/friendshipService"
 
-export function friendshipEventsHandler(namespace:string, io: Server, socket: Socket, {friendshipChatModel, friendshipModel, chatModel}: IModels) {
-
-    const friendshipService = new FriendshipService({chatModel,friendshipChatModel,friendshipModel})
-    const friendshipController = new FriendshipController({friendshipService})
+export function friendshipEventsHandler(namespace:string, io: Server, socket: Socket, friendshipController: FriendshipController) {
 
     socket.on(`${namespace}:sent`, (data)=> {
         friendshipController.sent(namespace, io, socket, data)
