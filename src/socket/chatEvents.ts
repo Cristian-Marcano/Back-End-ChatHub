@@ -22,4 +22,12 @@ export function chatEventsHandler(namespace:string, io: Server, socket: Socket, 
     socket.on(`${namespace}:readMessage`, (data)=> {
         chatController.readMessageChat(namespace, io, socket, data)
     })
+
+    socket.on(`${namespace}:editMessage`, (data)=> {
+        chatController.editMessageChat(namespace, io, socket, data)
+    })
+
+    socket.on(`${namespace}:deleteMessage`, (data)=> {
+        chatController.deleteMessageChat(namespace, io, socket, data)
+    })
 }

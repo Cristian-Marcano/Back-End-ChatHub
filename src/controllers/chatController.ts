@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
 import { validatePagination } from "../schemas/paginationSchemas"
-import { validateChatId, validateMessage, validateMessageView } from "../schemas/messageSchemas"
+import { validateChatId, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete } from "../schemas/messageSchemas"
 
 export class ChatController {
     private chatService: ChatService
@@ -89,6 +89,49 @@ export class ChatController {
         try {
             await this.chatService.readMessageChat({input: resultSchema.data})
             socket.emit(`${namespace}:viewed`, {message: `Message viewed by: ${id}`})
+
+        } catch(error:any) {
+            socket.emit('error:server', {message: 'Server error'})
+        }
+    }
+
+    editMessageChat = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const { id } = socket.data
+        const resultSchema = validateMessageEdit(data)
+
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            await this.chatService.editMessageChat({input: resultSchema.data, id})
+            // Emite al cuarto del chat que el mensaje fue editado
+            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:messageEdited`, {
+                messageId: resultSchema.data.messageId, 
+                newText: resultSchema.data.msgText
+            })
+
+        } catch(error:any) {
+            socket.emit('error:server', {message: 'Server error'})
+        }
+    }
+
+    deleteMessageChat = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const { id } = socket.data
+        const resultSchema = validateMessageDelete(data)
+
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            await this.chatService.deleteMessageChat({input: resultSchema.data, id})
+            // Emite al cuarto del chat que el mensaje fue borrado
+            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:messageDeleted`, {
+                messageId: resultSchema.data.messageId
+            })
 
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})

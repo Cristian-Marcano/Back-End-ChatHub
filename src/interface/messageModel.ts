@@ -1,7 +1,7 @@
 import { UUID } from "node:crypto"
 import { User } from "./userModel"
 import { PoolConnection } from "mysql2/promise"
-import { ChatId, MessageId, MessageSchema, MessageViewSchema } from "../schemas/messageSchemas"
+import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema } from "../schemas/messageSchemas"
 
 export interface Message {
     id: number,
@@ -33,7 +33,7 @@ export interface IMessageModel {
 
     createMessageView(params: {input: MessageViewSchema}): Promise<void>
 
-    updateMessage(params: {input: MessageSchema, id: MessageId}, conn?: PoolConnection): Promise<void>
+    updateMessage(params: {input: MessageEditSchema, userId: UUID}, conn?: PoolConnection): Promise<void>
 
-    removeMessage(params: {id: MessageId}, conn?: PoolConnection): Promise<void>
+    removeMessage(params: {input: MessageDeleteSchema, userId: UUID}, conn?: PoolConnection): Promise<void>
 }

@@ -34,6 +34,23 @@ export type MessageSchema = z.infer<typeof messageSchemas>
 
 export type MessageViewSchema = z.infer<typeof messageViewSchemas>
 
+const messageEditSchema = z.object({
+    messageId,
+    chatId,
+    msgText: z.string({
+        invalid_type_error: 'msgText must be a string',
+        required_error: 'msgText is required'
+    }).max(65530, 'msgText must be max length 65530')
+})
+
+const messageDeleteSchema = z.object({
+    messageId,
+    chatId
+})
+
+export type MessageEditSchema = z.infer<typeof messageEditSchema>
+export type MessageDeleteSchema = z.infer<typeof messageDeleteSchema>
+
 export const validateChatId = (input: object) => chatId.safeParse(input)
 
 export const validateMessageId = (input: object) => messageId.safeParse(input)
@@ -41,3 +58,7 @@ export const validateMessageId = (input: object) => messageId.safeParse(input)
 export const validateMessage = (input: object) => messageSchemas.safeParse(input)
 
 export const validateMessageView = (input: object) => messageViewSchemas.safeParse(input)
+
+export const validateMessageEdit = (input: object) => messageEditSchema.safeParse(input)
+
+export const validateMessageDelete = (input: object) => messageDeleteSchema.safeParse(input)
