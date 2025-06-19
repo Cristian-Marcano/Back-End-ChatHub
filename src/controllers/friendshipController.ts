@@ -34,7 +34,7 @@ export class FriendshipController {
     }
 
     action = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
-        const { id } = data, { id: userId } = socket.data, { state } = data
+        const { id, state } = data
 
         const resultSchema = validateState(state)
 
@@ -44,8 +44,13 @@ export class FriendshipController {
         }
 
         try {
-            await this.friendshipService.actionFriendship({input: state, id})
+            const friendship = await this.friendshipService.actionFriendship({input: state, id})
 
+            if (friendship) {
+                const { primary_user_id, secondary_user_id } = friendship as any
+                io.to(primary_user_id).emit(`${namespace}:actionUpdated`, {results: friendship})
+                io.to(secondary_user_id).emit(`${namespace}:actionUpdated`, {results: friendship})
+            }
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})
         }
@@ -62,10 +67,13 @@ export class FriendshipController {
         }
 
         try {
-            const { id } = socket.data
             const friendship = await this.friendshipService.acceptFriendship({id: resultSchema.data})
 
-            socket.emit(`${namespace}:results`, {results: friendship})
+            if (friendship) {
+                const { primary_user_id, secondary_user_id } = friendship as any
+                io.to(primary_user_id).emit(`${namespace}:accepted`, {results: friendship})
+                io.to(secondary_user_id).emit(`${namespace}:accepted`, {results: friendship})
+            }
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})
         }
@@ -82,10 +90,13 @@ export class FriendshipController {
         }
 
         try {
-            const { id } = socket.data
             const friendship = await this.friendshipService.rejectionFriendship({id: resultSchema.data})
 
-            socket.emit(`${namespace}:rejected`, {message: friendship})
+            if (friendship) {
+                const { primary_user_id, secondary_user_id } = friendship as any
+                io.to(primary_user_id).emit(`${namespace}:rejected`, {results: friendship})
+                io.to(secondary_user_id).emit(`${namespace}:rejected`, {results: friendship})
+            }
         } catch(error:any) {
             socket.emit('error:server', {message: `La solicitud ${id} ha sido rechazada`})
         }

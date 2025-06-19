@@ -29,7 +29,7 @@ export interface IMessageModel {
 
     getMessageViewUser(params: {messageId: MessageId}): Promise<MessageViewUser[]>
 
-    createMessage(params: {input: MessageSchema}): Promise<void>
+    createMessage(params: {input: MessageSchema, id: UUID}): Promise<MessageUser>
 
     createMessageView(params: {input: MessageViewSchema}): Promise<void>
 

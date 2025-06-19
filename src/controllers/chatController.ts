@@ -22,6 +22,11 @@ export class ChatController {
 
         try {
             const chats  = await this.chatService.getAllChat({input: resultSchema.data, id })
+            
+            if (Array.isArray(chats)) {
+                chats.forEach(chat => socket.join(chat.id.toString()))
+            }
+
             socket.emit(`${namespace}:results`, {results: chats})
 
         } catch(error:any) {
@@ -48,8 +53,10 @@ export class ChatController {
     }
 
     typing = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
-
-        socket.emit(`${namespace}:result`, {message: 'Escribiendo...'})
+        const { id } = socket.data
+        if (data && data.chatId) {
+            socket.to(data.chatId.toString()).emit(`${namespace}:typing`, { userId: id, chatId: data.chatId })
+        }
     }
 
     sendMessageChat = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
@@ -62,8 +69,8 @@ export class ChatController {
         }
 
         try {
-            await this.chatService.sendMessageChat({input: resultSchema.data})
-            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:newMessage`, {message: `New message from: ${id}`})
+            const message = await this.chatService.sendMessageChat({input: resultSchema.data, id})
+            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:newMessage`, {results: message})
 
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})

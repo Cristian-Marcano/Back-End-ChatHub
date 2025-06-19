@@ -34,7 +34,9 @@ export class FriendshipService {
     }
 
     async actionFriendship({ input, id }: {input: StateSchema, id:number}) {
-        return await this.friendshipModel.updateFriendship({ input, id })
+        await this.friendshipModel.updateFriendship({ input, id })
+        const [friendship] = await this.friendshipModel.getFriendshipById({ id })
+        return friendship
     }
 
     async acceptFriendship({ id }: {id: number}) {
@@ -43,14 +45,19 @@ export class FriendshipService {
         const chat_id:number = await this.chatModel.createChat()
         const inputChat:FriendshipChatSchema = {friendshipId: id, chatId: chat_id }
 
-        return withTransaction(async(conn) => {
+        await withTransaction(async(conn) => {
             await this.friendshipChatModel.createFriendshipChat({ input: inputChat }, conn)
         })
+        
+        const [friendship] = await this.friendshipModel.getFriendshipById({ id })
+        return friendship
     }
 
     async rejectionFriendship({ id }: {id: number}) {
         const input:StateSchema = { primary_state: 'accepted', secondary_state: 'blocked' }
-        return await this.friendshipModel.updateFriendship({ input, id })
+        await this.friendshipModel.updateFriendship({ input, id })
+        const [friendship] = await this.friendshipModel.getFriendshipById({ id })
+        return friendship
     }
 
     async loadFriendships({ id }: { id: number}){
