@@ -34,8 +34,8 @@ export class ChatService {
         return true
     }
 
-    async sendMessageChat({ input }: {input: MessageSchema}) {
-        return await this.messageModel.createMessage({ input })
+    async sendMessageChat({ input, id }: {input: MessageSchema, id: UUID}) {
+        return await this.messageModel.createMessage({ input, id })
     }
 
     async readMessageChat({ input }: {input: MessageViewSchema }) {
