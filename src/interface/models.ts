@@ -5,6 +5,7 @@ import { IFriendshipModel } from "./friendshipModel"
 import { IFriendshipChatModel } from "./friendshipChatModel"
 import { IChatModel } from "./chatModel"
 import { IMessageModel } from "./messageModel"
+import { IGroupModel } from "./groupModel"
 
 export interface IModels {
     userModel?: IUserModel,
@@ -14,4 +15,5 @@ export interface IModels {
     friendshipChatModel?: IFriendshipChatModel,
     chatModel?: IChatModel,
     messageModel?: IMessageModel,
+    groupModel?: IGroupModel,
 }
