@@ -15,6 +15,8 @@ export async function getModels(): Promise<IModels> {
         const { friendshipModel } = await import('./mysql/friendshipModel')
         const { friendshipChatModel } = await import('./mysql/friendshipChatModel')
         const { groupModel } = await import('./mysql/groupModel')
+        const { passwordResetsModel } = await import('./mysql/passwordResetsModel')
+        const { refreshTokensModel } = await import('./mysql/refreshTokensModel')
 
         return {
             userModel,
@@ -24,7 +26,9 @@ export async function getModels(): Promise<IModels> {
             messageModel,
             friendshipModel,
             friendshipChatModel,
-            groupModel
+            groupModel,
+            passwordResetsModel,
+            refreshTokensModel
         }
     }
 

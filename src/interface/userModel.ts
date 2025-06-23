@@ -22,4 +22,6 @@ export interface IUserModel {
     createUser(params: {input: UserSchema}): Promise<void>
 
     updateUser(params: {input: UserPartialSchema, id:UUID}, conn?: PoolConnection): Promise<void>
+    
+    updatePassword(params: {userId: string, newPassword: string}): Promise<void>
 }

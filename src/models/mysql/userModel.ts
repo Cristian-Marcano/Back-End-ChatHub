@@ -49,6 +49,11 @@ class UserModel implements IUserModel {
         const execute = conn ?? pool
         await execute.query(`UPDATE user_account SET ? WHERE id = UUID_TO_BIN(?)`, [input, id])
     }
+
+    async updatePassword({userId, newPassword}: {userId: string, newPassword: string}): Promise<void> {
+        await pool.query(`UPDATE user_account SET keyword = ? WHERE id = UUID_TO_BIN(?)`, [newPassword, userId])
+    }
 }
 
 export const userModel = new UserModel()
+// I will append it manually, wait, I need to update IUserModel first.
