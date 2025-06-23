@@ -6,6 +6,8 @@ import { IFriendshipChatModel } from "./friendshipChatModel"
 import { IChatModel } from "./chatModel"
 import { IMessageModel } from "./messageModel"
 import { IGroupModel } from "./groupModel"
+import { IPasswordResetsModel } from "./passwordResetsModel"
+import { IRefreshTokensModel } from "./refreshTokensModel"
 
 export interface IModels {
     userModel?: IUserModel,
@@ -16,4 +18,6 @@ export interface IModels {
     chatModel?: IChatModel,
     messageModel?: IMessageModel,
     groupModel?: IGroupModel,
+    passwordResetsModel?: IPasswordResetsModel,
+    refreshTokensModel?: IRefreshTokensModel,
 }

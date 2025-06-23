@@ -9,6 +9,7 @@ import { createAuthRouter } from './routes/authRoutes'
 import { socketEventHandler } from './socket'
 import { getModels } from './models'
 import ip from './middlewares/internalIP'
+import { globalLimiter } from './middlewares/rateLimiter'
 
 export async function createApp(): Promise<void> {
     const app = express()
@@ -18,6 +19,7 @@ export async function createApp(): Promise<void> {
     app.use(json())
     app.use(morgan('dev'))
     app.use(corsMiddleware())
+    app.use(globalLimiter)
     app.use(express.static(join(process.cwd(), '/client')))
     app.disable('x-powered-by')
 
