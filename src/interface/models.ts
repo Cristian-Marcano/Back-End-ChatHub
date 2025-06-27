@@ -8,6 +8,7 @@ import { IMessageModel } from "./messageModel"
 import { IGroupModel } from "./groupModel"
 import { IPasswordResetsModel } from "./passwordResetsModel"
 import { IRefreshTokensModel } from "./refreshTokensModel"
+import { IPushSubscriptionsModel } from "./pushSubscriptionsModel"
 
 export interface IModels {
     userModel?: IUserModel,
@@ -20,4 +21,5 @@ export interface IModels {
     groupModel?: IGroupModel,
     passwordResetsModel?: IPasswordResetsModel,
     refreshTokensModel?: IRefreshTokensModel,
+    pushSubscriptionsModel?: IPushSubscriptionsModel
 }
