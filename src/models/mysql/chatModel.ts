@@ -58,6 +58,17 @@ export class ChatModel implements IChatModel {
         await execute.query('DELETE FROM chat WHERE id = ?', [id])
     }
 
+    async getChatMembers(chatId: number): Promise<string[]> {
+        const sql = `
+            SELECT BIN_TO_UUID(primary_user_id) as member_id FROM friendship f JOIN friendship_chat fc ON f.id = fc.friendship_id WHERE fc.chat_id = ?
+            UNION
+            SELECT BIN_TO_UUID(secondary_user_id) as member_id FROM friendship f JOIN friendship_chat fc ON f.id = fc.friendship_id WHERE fc.chat_id = ?
+            UNION
+            SELECT BIN_TO_UUID(member_id) as member_id FROM group_members gm JOIN group_chat gc ON gm.group_chat_id = gc.id WHERE gc.chat_id = ?
+        `;
+        const [rows] = await pool.query(sql, [chatId, chatId, chatId]) as QueryResult as [Array<{member_id: string}>]
+        return rows.map(r => r.member_id)
+    }
 }
 
 export const chatModel = new ChatModel()

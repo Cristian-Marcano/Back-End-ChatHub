@@ -14,6 +14,8 @@ import { FriendshipController } from "../controllers/friendshipController"
 import { GroupService } from "../services/groupService"
 import { GroupController } from "../controllers/groupController"
 
+import { NotificationService } from "../services/notificationService"
+
 let userController: UserController | null = null
 let chatController: ChatController | null = null
 let friendshipController: FriendshipController | null = null
@@ -37,7 +39,8 @@ export function socketEventHandler(
             chatModel: models.chatModel, 
             messageModel: models.messageModel
         })
-        chatController = new ChatController({chatService})
+        const notificationService = new NotificationService(models)
+        chatController = new ChatController({chatService, notificationService})
     }
 
     if (!friendshipController) {

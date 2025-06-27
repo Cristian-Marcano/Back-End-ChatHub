@@ -50,4 +50,8 @@ export class ChatService {
         return await this.messageModel.removeMessage({ input, userId: id })
     }
 
+    async getChatMembers(chatId: number) {
+        return await this.chatModel.getChatMembers(chatId)
+    }
+
 }

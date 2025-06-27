@@ -26,4 +26,6 @@ export interface IChatModel {
     createChat(conn?: PoolConnection): Promise<number>
 
     removeChat(params: {id: number}, conn?: PoolConnection): Promise<void>
+
+    getChatMembers(chatId: number): Promise<string[]>
 }

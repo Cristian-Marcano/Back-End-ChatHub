@@ -1,13 +1,16 @@
 import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
+import { NotificationService } from "../services/notificationService"
 import { validatePagination } from "../schemas/paginationSchemas"
 import { validateChatId, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete } from "../schemas/messageSchemas"
 
 export class ChatController {
     private chatService: ChatService
+    private notificationService?: NotificationService
 
-    constructor({chatService}: {chatService: ChatService}) {
+    constructor({chatService, notificationService}: {chatService: ChatService, notificationService?: NotificationService}) {
         this.chatService = chatService
+        this.notificationService = notificationService
     }
 
     getAll = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
@@ -70,7 +73,28 @@ export class ChatController {
 
         try {
             const message = await this.chatService.sendMessageChat({input: resultSchema.data, id})
-            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:newMessage`, {results: message})
+            const chatIdStr = resultSchema.data.chatId.toString()
+            io.to(chatIdStr).emit(`${namespace}:newMessage`, {results: message})
+
+            // Lógica de Push Notifications
+            if (this.notificationService) {
+                const chatMembers = await this.chatService.getChatMembers(resultSchema.data.chatId)
+                const roomSockets = await io.in(chatIdStr).fetchSockets()
+                
+                // Mapear qué IDs están online en esa room
+                const onlineUsers = new Set(roomSockets.map(s => s.data.id))
+                
+                for (const memberId of chatMembers) {
+                    // Si no soy yo mismo, y no está conectado al socket del chat
+                    if (memberId !== id && !onlineUsers.has(memberId)) {
+                        await this.notificationService.sendPushToUser(memberId, {
+                            title: 'Nuevo Mensaje',
+                            body: resultSchema.data.msgText,
+                            chatId: resultSchema.data.chatId
+                        }).catch(err => console.error(err))
+                    }
+                }
+            }
 
         } catch(error:any) {
             socket.emit('error:server', {message: 'Server error'})
