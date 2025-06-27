@@ -6,6 +6,7 @@ import morgan from 'morgan'
 import { corsMiddleware } from './middlewares/cors'
 import { authMiddleware } from './middlewares/auth'
 import { createAuthRouter } from './routes/authRoutes'
+import { createNotificationRouter } from './routes/notificationRoutes'
 import { socketEventHandler } from './socket'
 import { getModels } from './models'
 import ip from './middlewares/internalIP'
@@ -27,6 +28,7 @@ export async function createApp(): Promise<void> {
     const models = await getModels()
 
     app.use('/', createAuthRouter(models))
+    app.use('/api/notifications', createNotificationRouter(models))
     
     const server = createServer(app)
 
