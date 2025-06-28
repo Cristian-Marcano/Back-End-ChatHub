@@ -4,8 +4,8 @@ import { IPasswordResetsModel } from "../../interface/passwordResetsModel"
 
 class PasswordResetsModel implements IPasswordResetsModel {
     async createResetToken(input: { userId: string, token: string, expiresAt: Date }): Promise<void> {
-        const { userId, token, expiresAt } = input
-        await pool.query('INSERT INTO password_resets(user_id, reset_token, expires_at) VALUES (UUID_TO_BIN(?), ?, ?)', [userId, token, expiresAt])
+        const { userId, token } = input
+        await pool.query('INSERT INTO password_resets(user_id, reset_token, expires_at) VALUES (UUID_TO_BIN(?), ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))', [userId, token])
     }
 
     async getValidToken(input: { token: string }): Promise<Array<{ id: number, user_id: string, reset_token: string, expires_at: Date }>> {
