@@ -73,6 +73,26 @@ export class UserController {
         }
     }
 
+    getInfoHttp = async(req: Request, res: Response): Promise<void> => {
+        const userId = req.body.userPayload?.id
+
+        if(!userId) {
+            res.status(401).json({message: 'Unauthorized'})
+            return
+        }
+
+        try {
+            const userInfo = await this.userService.getUserInfoById({id: userId})
+            if (!userInfo) {
+                res.status(404).json({message: 'User info not found'})
+                return
+            }
+            res.status(200).json(userInfo)
+        } catch (error: any) {
+            res.status(500).json({message: 'Server error', error})
+        }
+    }
+
     upsertInfoHttp = async(req: Request, res: Response): Promise<void> => {
         const resultSchema = validateUserInfo(req.body)
         const userId = req.body.userPayload?.id

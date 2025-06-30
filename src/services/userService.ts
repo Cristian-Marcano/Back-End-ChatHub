@@ -27,6 +27,12 @@ export class UserService {
         return this.userInfoModel.getUsersInfo({input, id})
     }
 
+    async getUserInfoById({id}: {id: UUID}) {
+        const users = await this.userInfoModel.getUserInfoById({id})
+        if (!users || users.length === 0) return null
+        return users[0]
+    }
+
     async createUserInfo({input, id}: {input: UserInfoSchema, id: UUID}) {
         return this.userInfoModel.createUserInfo({input, id})
     }

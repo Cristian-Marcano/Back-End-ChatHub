@@ -10,6 +10,7 @@ export const createUserRouter = (models: IModels) => {
     const userService = new UserService(models)
     const userController = new UserController({ userService })
 
+    userRouter.get('/info', validateAuthorization, userController.getInfoHttp)
     userRouter.put('/info', validateAuthorization, userController.upsertInfoHttp)
     userRouter.patch('/info', validateAuthorization, userController.patchInfoHttp)
 
