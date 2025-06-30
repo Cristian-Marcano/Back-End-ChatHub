@@ -36,6 +36,19 @@ class UserInfoModel implements IUserInfoModel {
         const execute = conn ?? pool
         await execute.query(`UPDATE user_account_info SET ? WHERE user_id = UUID_TO_BIN(?)`, [input, id])
     }
+
+    async upsertUserInfo({input, id}: {input: UserInfoSchema, id: UUID}): Promise<void> {
+        const { full_name, phone, photo, about } = input
+        await pool.query(`
+            INSERT INTO user_account_info (full_name, phone, photo, about, user_id) 
+            VALUES (?, ?, ?, ?, UUID_TO_BIN(?))
+            ON DUPLICATE KEY UPDATE 
+                full_name = VALUES(full_name),
+                phone = VALUES(phone),
+                photo = VALUES(photo),
+                about = VALUES(about)
+        `, [full_name, phone, photo, about, id])
+    }
 }
 
 export const userInfoModel = new UserInfoModel()

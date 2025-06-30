@@ -37,4 +37,12 @@ export class UserService {
             await this.userInfoModel.updateUserInfo({input:inputInfo, id}, conn)
         })
     }
+
+    async upsertUserInfo({input, id}: {input: UserInfoSchema, id: UUID}) {
+        return this.userInfoModel.upsertUserInfo({input, id})
+    }
+
+    async updateUserInfoOnly({input, id}: {input: UserInfoPartialSchema, id: UUID}) {
+        return this.userInfoModel.updateUserInfo({input, id})
+    }
 }

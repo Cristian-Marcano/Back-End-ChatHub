@@ -23,4 +23,6 @@ export interface IUserInfoModel {
     createUserInfo(params: {input: UserInfoSchema, id: UUID}): Promise<void>
 
     updateUserInfo(params: {input: UserInfoPartialSchema, id: UUID}, conn?: PoolConnection): Promise<void>
+
+    upsertUserInfo(params: {input: UserInfoSchema, id: UUID}): Promise<void>
 }

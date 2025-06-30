@@ -7,6 +7,7 @@ import { corsMiddleware } from './middlewares/cors'
 import { authMiddleware } from './middlewares/auth'
 import { createAuthRouter } from './routes/authRoutes'
 import { createNotificationRouter } from './routes/notificationRoutes'
+import { createUserRouter } from './routes/userRoutes'
 import { socketEventHandler } from './socket'
 import { getModels } from './models'
 import ip from './middlewares/internalIP'
@@ -29,6 +30,7 @@ export async function createApp(): Promise<void> {
 
     app.use('/', createAuthRouter(models))
     app.use('/api/notifications', createNotificationRouter(models))
+    app.use('/api/users', createUserRouter(models))
     
     const server = createServer(app)
 

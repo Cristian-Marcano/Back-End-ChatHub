@@ -1,4 +1,5 @@
 import { Server, Socket } from "socket.io"
+import { Request, Response } from "express"
 import { UserService } from "../services/userService"
 import { validatePaginationUsernameAndEmail } from "../schemas/paginationSchemas"
 import { validateUserInfo, validatePartialUserInfo } from "../schemas/userInfoSchemas"
@@ -69,6 +70,55 @@ export class UserController {
             socket.emit(`${namespace}:updated`, {message: 'User was updated'})
         } catch(error: any) {
             socket.emit('error:server', {message: 'Server error'})
+        }
+    }
+
+    upsertInfoHttp = async(req: Request, res: Response): Promise<void> => {
+        const resultSchema = validateUserInfo(req.body)
+        const userId = req.body.userPayload?.id
+
+        if(!resultSchema.success) {
+            res.status(422).json({error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        if(!userId) {
+            res.status(401).json({message: 'Unauthorized'})
+            return
+        }
+
+        try {
+            await this.userService.upsertUserInfo({input: resultSchema.data, id: userId})
+            res.status(200).json({message: 'User info was successfully created or updated'})
+        } catch (error: any) {
+            res.status(500).json({message: 'Server error', error})
+        }
+    }
+
+    patchInfoHttp = async(req: Request, res: Response): Promise<void> => {
+        const resultSchema = validatePartialUserInfo(req.body)
+        const userId = req.body.userPayload?.id
+
+        if(!resultSchema.success) {
+            res.status(422).json({error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        if(!userId) {
+            res.status(401).json({message: 'Unauthorized'})
+            return
+        }
+
+        if (Object.keys(resultSchema.data).length === 0) {
+            res.status(400).json({message: 'No data provided to update'})
+            return
+        }
+
+        try {
+            await this.userService.updateUserInfoOnly({input: resultSchema.data, id: userId})
+            res.status(200).json({message: 'User info was successfully partially updated'})
+        } catch (error: any) {
+            res.status(500).json({message: 'Server error', error})
         }
     }
 }
