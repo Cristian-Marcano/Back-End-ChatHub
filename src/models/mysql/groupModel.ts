@@ -1,5 +1,5 @@
 import { UUID } from "node:crypto"
-import { PoolConnection, QueryResult } from "mysql2/promise"
+import { PoolConnection, QueryResult, ResultSetHeader } from "mysql2/promise"
 import { GroupChat, GroupMember, IGroupModel } from "../../interface/groupModel"
 import { AddMemberSchema, CreateGroupSchema, LeaveGroupSchema } from "../../schemas/groupSchemas"
 import { ChatId } from "../../schemas/messageSchemas"
@@ -12,14 +12,14 @@ class GroupModel implements IGroupModel {
         
         // El insert en 'chat' se asume que se hace desde chatModel, pero lo hacemos aquí si queremos todo transaccional.
         // O podemos inyectar el chatModel. Para simplificar, insertamos directamente en la tabla chat.
-        const [chatResult] = await execute.query('INSERT INTO chat() VALUES()') as any
+        const [chatResult] = await execute.query('INSERT INTO chat() VALUES()') as [ResultSetHeader, any]
         const chatId = chatResult.insertId
         
         // Creamos el grupo
         const [groupResult] = await execute.query(
             'INSERT INTO group_chat(nickname, create_by, chat_id) VALUES (?, UUID_TO_BIN(?), ?)', 
             [nickname, creatorId, chatId]
-        ) as any
+        ) as [ResultSetHeader, any]
         const groupChatId = groupResult.insertId
         
         // Añadimos al creador como primer miembro

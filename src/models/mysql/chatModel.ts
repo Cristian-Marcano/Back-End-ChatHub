@@ -1,6 +1,6 @@
 import { UUID } from "node:crypto"
 import { ChatMessage, IChatModel } from "../../interface/chatModel"
-import { PoolConnection, QueryResult } from "mysql2/promise"
+import { PoolConnection, QueryResult, ResultSetHeader } from "mysql2/promise"
 import { PaginationNameSchema, PaginationSchema } from "../../schemas/paginationSchemas"
 import pool from "../../db/mysql"
 
@@ -50,7 +50,7 @@ export class ChatModel implements IChatModel {
         const execute = conn ?? pool
         const [result] = await execute.query('INSERT INTO chat DEFAULT VALUES');
     
-        return (result as any).insertId;
+        return (result as ResultSetHeader).insertId;
     }
 
     async removeChat({id}: {id: number}, conn?: PoolConnection): Promise<void> {

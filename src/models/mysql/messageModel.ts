@@ -1,5 +1,5 @@
 import { UUID } from "node:crypto"
-import { PoolConnection, QueryResult } from "mysql2/promise"
+import { PoolConnection, QueryResult, ResultSetHeader } from "mysql2/promise"
 import { IMessageModel, MessageUser, MessageViewUser } from "../../interface/messageModel"
 import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema } from "../../schemas/messageSchemas"
 import pool from "../../db/mysql"
@@ -21,7 +21,7 @@ class MessageModel implements IMessageModel {
 
     async createMessage({input, id}: { input: MessageSchema, id: UUID }): Promise<MessageUser> {
         const { chatId, msgText } = input
-        const [result] = await pool.query('INSERT INTO message(chat_id, msg_text, user_sending_id) VALUES (?,?,UUID_TO_BIN(?))', [chatId, msgText, id]) as any
+        const [result] = await pool.query('INSERT INTO message(chat_id, msg_text, user_sending_id) VALUES (?,?,UUID_TO_BIN(?))', [chatId, msgText, id]) as [ResultSetHeader, any]
         
         const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, chat_id, msg_text, create_at, update_at, censored, username, email 
                     FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id WHERE m.id = ?`

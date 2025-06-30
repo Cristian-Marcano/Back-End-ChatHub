@@ -36,7 +36,7 @@ export class NotificationService {
         })
     }
 
-    async sendPushToUser(userId: string, payload: any) {
+    async sendPushToUser(userId: string, payload: Record<string, unknown>) {
         const subscriptions = await this.pushSubscriptionsModel.getSubscriptionsByUserId({ userId })
         
         for (const sub of subscriptions) {

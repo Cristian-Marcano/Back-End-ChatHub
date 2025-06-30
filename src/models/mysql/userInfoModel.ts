@@ -29,16 +29,22 @@ class UserInfoModel implements IUserInfoModel {
 
     async createUserInfo({input, id}: {input: UserInfoSchema, id: UUID}): Promise<void> {
         const { full_name, phone, photo, about } = input
-        await pool.query(`INSERT INTO user_account_info(full_name, phone, photo, about, user_id) VALUES (?,?,?,?,UUID_TO_BIN(?))`, [full_name, phone, photo, about, id])
+        const photoStr = photo ? JSON.stringify(photo) : null
+        await pool.query(`INSERT INTO user_account_info(full_name, phone, photo, about, user_id) VALUES (?,?,?,?,UUID_TO_BIN(?))`, [full_name, phone, photoStr, about, id])
     }
 
     async updateUserInfo({input, id}: {input: UserInfoPartialSchema, id: UUID}, conn?: PoolConnection): Promise<void> {
         const execute = conn ?? pool
-        await execute.query(`UPDATE user_account_info SET ? WHERE user_id = UUID_TO_BIN(?)`, [input, id])
+        const updateData: Record<string, unknown> = { ...input }
+        if (updateData.photo !== undefined) {
+            updateData.photo = updateData.photo ? JSON.stringify(updateData.photo) : null
+        }
+        await execute.query(`UPDATE user_account_info SET ? WHERE user_id = UUID_TO_BIN(?)`, [updateData, id])
     }
 
     async upsertUserInfo({input, id}: {input: UserInfoSchema, id: UUID}): Promise<void> {
         const { full_name, phone, photo, about } = input
+        const photoStr = photo ? JSON.stringify(photo) : null
         await pool.query(`
             INSERT INTO user_account_info (full_name, phone, photo, about, user_id) 
             VALUES (?, ?, ?, ?, UUID_TO_BIN(?))
@@ -47,7 +53,7 @@ class UserInfoModel implements IUserInfoModel {
                 phone = VALUES(phone),
                 photo = VALUES(photo),
                 about = VALUES(about)
-        `, [full_name, phone, photo, about, id])
+        `, [full_name, phone, photoStr, about, id])
     }
 }
 

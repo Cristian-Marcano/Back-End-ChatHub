@@ -47,7 +47,7 @@ export class FriendshipController {
             const friendship = await this.friendshipService.actionFriendship({input: state, id})
 
             if (friendship) {
-                const { primary_user_id, secondary_user_id } = friendship as any
+                const { primary_user_id, secondary_user_id } = friendship as { primary_user_id: string, secondary_user_id: string }
                 io.to(primary_user_id).emit(`${namespace}:actionUpdated`, {results: friendship})
                 io.to(secondary_user_id).emit(`${namespace}:actionUpdated`, {results: friendship})
             }
@@ -70,7 +70,7 @@ export class FriendshipController {
             const friendship = await this.friendshipService.acceptFriendship({id: resultSchema.data})
 
             if (friendship) {
-                const { primary_user_id, secondary_user_id } = friendship as any
+                const { primary_user_id, secondary_user_id } = friendship as { primary_user_id: string, secondary_user_id: string }
                 io.to(primary_user_id).emit(`${namespace}:accepted`, {results: friendship})
                 io.to(secondary_user_id).emit(`${namespace}:accepted`, {results: friendship})
             }
@@ -93,7 +93,7 @@ export class FriendshipController {
             const friendship = await this.friendshipService.rejectionFriendship({id: resultSchema.data})
 
             if (friendship) {
-                const { primary_user_id, secondary_user_id } = friendship as any
+                const { primary_user_id, secondary_user_id } = friendship as { primary_user_id: string, secondary_user_id: string }
                 io.to(primary_user_id).emit(`${namespace}:rejected`, {results: friendship})
                 io.to(secondary_user_id).emit(`${namespace}:rejected`, {results: friendship})
             }
