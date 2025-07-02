@@ -14,6 +14,7 @@ export const validateAuthorization = (req:Request, res:Response, next:NextFuncti
     if(headerToken !== undefined && headerToken?.startsWith('Bearer ')) {
         try {
             const bearerToken = headerToken.substring(7)
+            if (!req.body) req.body = {}
             req.body.userPayload = validateToken(bearerToken)
             next()
         } catch(error) {
