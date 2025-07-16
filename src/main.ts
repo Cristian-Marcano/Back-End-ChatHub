@@ -3,7 +3,7 @@ import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import { join } from 'node:path'
 import morgan from 'morgan'
-import { corsMiddleware } from './middlewares/cors'
+import { corsMiddleware, ACCEPTED_ORIGINS } from './middlewares/cors'
 import { authMiddleware } from './middlewares/auth'
 import { createAuthRouter } from './routes/authRoutes'
 import { createNotificationRouter } from './routes/notificationRoutes'
@@ -34,7 +34,12 @@ export async function createApp(): Promise<void> {
     
     const server = createServer(app)
 
-    const io = new Server(server)
+    const io = new Server(server, {
+        cors: {
+            origin: ACCEPTED_ORIGINS,
+            methods: ["GET", "POST"]
+        }
+    })
     io.use(authMiddleware)
 
     io.on('connection', (socket) => {
