@@ -46,6 +46,7 @@ export function socketEventHandler(
     if (!friendshipController) {
         const friendshipService = new FriendshipService({
             chatModel: models.chatModel,
+            userInfoModel: models.userInfoModel,
             friendshipChatModel: models.friendshipChatModel, 
             friendshipModel: models.friendshipModel
         })
