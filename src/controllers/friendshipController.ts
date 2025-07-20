@@ -103,17 +103,10 @@ export class FriendshipController {
     }
 
     load = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
-        const { id } = data
-
-        const resultSchema = validateId(id)
-
-        if(!resultSchema.success) {
-            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
-            return
-        }
+        const { id } = socket.data
 
         try {
-            const friendshipsChats = await this.friendshipService.loadFriendships(id)
+            const friendshipsChats = await this.friendshipService.requestFriendships({ state: 'accepted', id })
 
             socket.emit(`${namespace}:results`, {results: friendshipsChats})
         } catch(error:any) {
@@ -122,17 +115,10 @@ export class FriendshipController {
     }
 
     request = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
-        const { id } = data
-
-        const resultSchema = validateState(data)
-
-        if(!resultSchema.success) {
-            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
-            return
-        }
+        const { id } = socket.data
 
         try {
-            const requests = await this.friendshipService.requestFriendships({ state: resultSchema.data, id })
+            const requests = await this.friendshipService.requestFriendships({ state: 'pending', id })
 
             socket.emit(`${namespace}:results`, {results: requests})
         } catch(error:any) {
