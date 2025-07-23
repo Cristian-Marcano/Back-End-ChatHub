@@ -29,7 +29,12 @@ export class FriendshipController {
             io.to(secondary_user_id).emit(`${namespace}:newRequest`, {results: data_secondary_user})
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            console.error('Error in sentFriendship:', error);
+            if (error.code === 'ER_DUP_ENTRY') {
+                socket.emit('error:server', {message: 'Ya enviaste una solicitud a este usuario o ya son amigos.'})
+            } else {
+                socket.emit('error:server', {message: error.message || 'Server error'})
+            }
         }
     }
 
