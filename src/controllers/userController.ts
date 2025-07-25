@@ -141,4 +141,35 @@ export class UserController {
             res.status(500).json({message: 'Server error', error})
         }
     }
+
+    updateSettingsHttp = async(req: Request, res: Response): Promise<void> => {
+        const resultUser = validatePartialUser(req.body)
+        const resultUserInfo = validatePartialUserInfo(req.body)
+        const userId = req.body.userPayload?.id
+
+        if(!userId) {
+            res.status(401).json({message: 'Unauthorized'})
+            return
+        }
+
+        if(!resultUser.success || !resultUserInfo.success) {
+            const errors = []
+            if(!resultUser.success)
+                errors.push(...JSON.parse(resultUser.error.message))
+
+            if(!resultUserInfo.success)
+                errors.push(...JSON.parse(resultUserInfo.error.message))
+
+            res.status(422).json({error: errors})
+            return
+        }
+
+        try {
+            await this.userService.updateUser({input: resultUser.data, inputInfo: resultUserInfo.data, id: userId})
+            res.status(200).json({message: 'User settings were successfully updated'})
+        } catch(error: any) {
+            console.error('Error updating settings HTTP:', error)
+            res.status(500).json({message: 'Server error', error: error.message})
+        }
+    }
 }

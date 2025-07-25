@@ -13,6 +13,9 @@ export const createUserRouter = (models: IModels) => {
     userRouter.get('/info', validateAuthorization, userController.getInfoHttp)
     userRouter.put('/info', validateAuthorization, userController.upsertInfoHttp)
     userRouter.patch('/info', validateAuthorization, userController.patchInfoHttp)
+    
+    // Ruta para actualizar ajustes completos (user_account + user_account_info)
+    userRouter.put('/settings', validateAuthorization, userController.updateSettingsHttp)
 
     return userRouter
 }
