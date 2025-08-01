@@ -169,6 +169,13 @@ export class UserController {
             res.status(200).json({message: 'User settings were successfully updated'})
         } catch(error: any) {
             console.error('Error updating settings HTTP:', error)
+            if (error.code === 'ER_DUP_ENTRY') {
+                const message = error.message.includes('email') 
+                    ? 'El correo electrónico ya está en uso por otro usuario.'
+                    : 'El nombre de usuario ya está en uso por otro usuario.';
+                res.status(409).json({ message });
+                return;
+            }
             res.status(500).json({message: 'Server error', error: error.message})
         }
     }

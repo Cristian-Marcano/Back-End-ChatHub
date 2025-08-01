@@ -34,6 +34,7 @@ class UserInfoModel implements IUserInfoModel {
     }
 
     async updateUserInfo({input, id}: {input: UserInfoPartialSchema, id: UUID}, conn?: PoolConnection): Promise<void> {
+        if (Object.keys(input).length === 0) return
         const execute = conn ?? pool
         const updateData: Record<string, unknown> = { ...input }
         if (updateData.photo !== undefined) {

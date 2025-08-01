@@ -46,6 +46,7 @@ class UserModel implements IUserModel {
     }
 
     async updateUser({input, id}: {input: UserPartialSchema, id:UUID}, conn?: PoolConnection): Promise<void> {
+        if (Object.keys(input).length === 0) return
         const execute = conn ?? pool
         await execute.query(`UPDATE user_account SET ? WHERE id = UUID_TO_BIN(?)`, [input, id])
     }
