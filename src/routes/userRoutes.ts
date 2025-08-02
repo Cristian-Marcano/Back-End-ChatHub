@@ -17,5 +17,8 @@ export const createUserRouter = (models: IModels) => {
     // Ruta para actualizar ajustes completos (user_account + user_account_info)
     userRouter.put('/settings', validateAuthorization, userController.updateSettingsHttp)
 
+    userRouter.post('/change-email/init', validateAuthorization, userController.initEmailChange)
+    userRouter.post('/change-email/verify', validateAuthorization, userController.verifyEmailChange)
+
     return userRouter
 }
