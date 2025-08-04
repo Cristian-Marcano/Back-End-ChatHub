@@ -9,6 +9,7 @@ import { ForgotPasswordSchema, ResetPasswordSchema, RefreshTokenSchema } from ".
 import { genereteHashedPassword, validateHashedPassword } from "../utils/password"
 import { assignToken, generateRandomToken } from "../utils/token"
 import { mailTo } from "../utils/mailTo"
+import { getVerifyEmailTemplate, getForgotPasswordTemplate } from "../utils/emailTemplates/templates"
 import crypto from "node:crypto"
 
 export class AuthService {
@@ -34,7 +35,12 @@ export class AuthService {
 
         if(tempEmails.length === 0) {
             await this.tempEmailsModel.createTempEmail({input, cod})
-            await mailTo(input.email, 'Titulo de Codigo de autenticacion', `Se le adjunta el siguiente codigo para autenticarse en la API ${cod}`)
+            await mailTo(
+                input.email, 
+                'Código de verificación', 
+                `Tu código de autenticación es ${cod}`,
+                getVerifyEmailTemplate(cod)
+            )
             return
         }
 
@@ -42,7 +48,12 @@ export class AuthService {
 
         if(containTempEmail) {
             await this.tempEmailsModel.updateTempEmail({input, cod})
-            await mailTo(input.email, 'Titulo de Codigo de autenticacion', `Se le adjunta el siguiente codigo para autenticarse en la API ${cod}`)
+            await mailTo(
+                input.email, 
+                'Código de verificación', 
+                `Tu código de autenticación es ${cod}`,
+                getVerifyEmailTemplate(cod)
+            )
             return
         }
         
@@ -121,7 +132,12 @@ export class AuthService {
             await this.passwordResetsModel.createResetToken({ userId: user[0].id, token: resetToken, expiresAt })
             
             // En un sistema real, enviariamos una URL como `https://tudominio.com/reset-password?token=${resetToken}`
-            await mailTo(input.email, 'Recuperacion de contraseña', `Tu codigo de recuperacion es: ${resetToken}`)
+            await mailTo(
+                input.email, 
+                'Recuperación de contraseña', 
+                `Tu código de recuperación es: ${resetToken}`,
+                getForgotPasswordTemplate(resetToken)
+            )
         }
     }
 

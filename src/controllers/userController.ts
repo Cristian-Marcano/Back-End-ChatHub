@@ -9,6 +9,7 @@ import { emailChangeRequestsModel } from "../models/mysql/emailChangeRequestsMod
 import { EmailChangeRequestSchema, EmailChangeVerifySchema } from "../schemas/emailChangeSchemas"
 import { userModel } from "../models/mysql/userModel"
 import { UUID } from "node:crypto"
+import { getChangeEmailOldTemplate, getChangeEmailNewTemplate } from "../utils/emailTemplates/templates"
 
 export class UserController {
     private userService: UserService
@@ -224,8 +225,18 @@ export class UserController {
             })
 
             // Send emails
-            await mailTo(oldEmail, 'Código para cambiar de correo', `Tu código de seguridad para cambiar tu correo es: ${oldCode}\nSi no fuiste tú, por favor cambia tu contraseña inmediatamente.`)
-            await mailTo(newEmail, 'Verifica tu nuevo correo', `Tu código de verificación para enlazar este correo a tu cuenta es: ${newCode}`)
+            await mailTo(
+                oldEmail, 
+                'Código para cambiar de correo', 
+                `Tu código de seguridad para cambiar tu correo es: ${oldCode}\nSi no fuiste tú, por favor cambia tu contraseña inmediatamente.`,
+                getChangeEmailOldTemplate(oldCode)
+            )
+            await mailTo(
+                newEmail, 
+                'Verifica tu nuevo correo', 
+                `Tu código de verificación para enlazar este correo a tu cuenta es: ${newCode}`,
+                getChangeEmailNewTemplate(newCode)
+            )
 
             res.status(200).json({message: 'Verification codes sent to both emails'})
         } catch (error: any) {

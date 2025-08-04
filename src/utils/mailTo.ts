@@ -3,7 +3,7 @@ import { createTransport } from 'nodemailer'
 const USER_MAIL = process.env.USER_MAIL ?? 'email@gmail.com'
 const USER_MAIL_KEY = process.env.USER_MAIL_KEY ?? '**** **** **** ****'
 
-export const mailTo = async(to:string, subject:string, text:string) => {
+export const mailTo = async(to:string, subject:string, text:string, html?:string) => {
     const transport = createTransport({
         service: 'gmail',
         auth: {
@@ -16,7 +16,8 @@ export const mailTo = async(to:string, subject:string, text:string) => {
         from: USER_MAIL,
         to,
         subject,
-        text
+        text,
+        html
     }
 
     try {
