@@ -16,14 +16,25 @@ class UserInfoModel implements IUserInfoModel {
 
     async getUsersInfo({input, id}: {input: PaginationUsernameAndEmailSchema, id: UUID}): Promise<UserInfo[]> {
         const { username, email, page, pageSize } = input
+        
+        // Excluimos usuarios que ya tienen una relación de amistad (pendiente, aceptada, etc) con el usuario actual
+        const excludeFriendshipsSQL = `
+            ua.id NOT IN (
+                SELECT primary_user_id FROM friendship WHERE secondary_user_id = UUID_TO_BIN(?)
+                UNION
+                SELECT secondary_user_id FROM friendship WHERE primary_user_id = UUID_TO_BIN(?)
+            )
+        `
+        
         const sql = `SELECT BIN_TO_UUID(ua.id) AS id, ua.username, ua.email, ua.create_at, uai.id AS idInfo, uai.full_name, uai.phone, uai.photo, 
                         about FROM user_account AS ua LEFT JOIN user_account_info AS uai ON ua.id = uai.user_id
-                        WHERE`
+                        WHERE ${excludeFriendshipsSQL} AND ua.id <> UUID_TO_BIN(?) AND`
+                        
         if(username) {
-            const [users] = await pool.query(`${sql} ua.username REGEXP ? AND ua.id <> UUID_TO_BIN(?) LIMIT ?, ?`, [username, id, page, pageSize]) as QueryResult as [UserInfo[]]
+            const [users] = await pool.query(`${sql} ua.username REGEXP ? LIMIT ?, ?`, [id, id, id, username, page, pageSize]) as QueryResult as [UserInfo[]]
             return users
         }
-        const [users] = await pool.query(`${sql} ua.email REGEXP ? AND ua.id <> UUID_TO_BIN(?) LIMIT ?, ?`, [email, id, page, pageSize]) as QueryResult as [UserInfo[]]
+        const [users] = await pool.query(`${sql} ua.email REGEXP ? LIMIT ?, ?`, [id, id, id, email, page, pageSize]) as QueryResult as [UserInfo[]]
         return users
     }
 
