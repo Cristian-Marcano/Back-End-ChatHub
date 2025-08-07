@@ -14,7 +14,7 @@ class FriendshipChatModel implements IFriendshipChatModel {
                     JOIN chat AS c ON c.id = fc.chat_id JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
                     JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id 
                     WHERE f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?) LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,page,pageSize]) as QueryResult as [FriendshipChat[]]
+        const [chats] = await pool.query(sql, [id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [FriendshipChat[]]
         return chats
     }
 
@@ -26,7 +26,7 @@ class FriendshipChatModel implements IFriendshipChatModel {
                     JOIN chat AS c ON c.id = fc.chat_id JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
                     JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id 
                     WHERE (f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?)) AND nickname REGEXP ? LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,page,pageSize]) as QueryResult as [FriendshipChat[]]
+        const [chats] = await pool.query(sql, [id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [FriendshipChat[]]
         return chats
     }
 

@@ -31,10 +31,10 @@ class UserInfoModel implements IUserInfoModel {
                         WHERE ${excludeFriendshipsSQL} AND ua.id <> UUID_TO_BIN(?) AND`
                         
         if(username) {
-            const [users] = await pool.query(`${sql} ua.username REGEXP ? LIMIT ?, ?`, [id, id, id, username, page, pageSize]) as QueryResult as [UserInfo[]]
+            const [users] = await pool.query(`${sql} ua.username REGEXP ? LIMIT ?, ?`, [id, id, id, username, (page - 1) * pageSize, pageSize]) as QueryResult as [UserInfo[]]
             return users
         }
-        const [users] = await pool.query(`${sql} ua.email REGEXP ? LIMIT ?, ?`, [id, id, id, email, page, pageSize]) as QueryResult as [UserInfo[]]
+        const [users] = await pool.query(`${sql} ua.email REGEXP ? LIMIT ?, ?`, [id, id, id, email, (page - 1) * pageSize, pageSize]) as QueryResult as [UserInfo[]]
         return users
     }
 
