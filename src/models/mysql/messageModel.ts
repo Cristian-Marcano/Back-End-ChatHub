@@ -6,14 +6,14 @@ import pool from "../../db/mysql"
 
 class MessageModel implements IMessageModel {
     async getMessagesByChatId({chatId}: { chatId: ChatId }): Promise<MessageUser[]> {
-        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, chat_id, msg_text, create_at, update_at, censored, username, email 
+        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
                     FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id WHERE m.chat_id = ?`
         const [messages] = await pool.query(sql, [chatId]) as QueryResult as [MessageUser[]]
         return messages
     }
 
     async getMessageViewUser({messageId}: { messageId: MessageId }): Promise<MessageViewUser[]> {
-        const sql = `SELECT mv.id AS id, BIN_TO_UUID(user_id) AS user_id, message_id, viewed_at, username, email
+        const sql = `SELECT mv.id AS id, BIN_TO_UUID(user_id) AS user_id, mv.message_id, mv.viewed_at, ua.username, ua.email
                     FROM message_view AS mv JOIN user_account AS ua ON mv.user_id = ua.id WHERE mv.message_id = ?`
         const [messagesView] = await pool.query(sql, [messageId]) as QueryResult as [MessageViewUser[]]
         return messagesView
@@ -23,7 +23,7 @@ class MessageModel implements IMessageModel {
         const { chatId, msgText } = input
         const [result] = await pool.query('INSERT INTO message(chat_id, msg_text, user_sending_id) VALUES (?,?,UUID_TO_BIN(?))', [chatId, msgText, id]) as [ResultSetHeader, any]
         
-        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, chat_id, msg_text, create_at, update_at, censored, username, email 
+        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
                     FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id WHERE m.id = ?`
         const [messages] = await pool.query(sql, [result.insertId]) as QueryResult as [MessageUser[]]
         return messages[0]
