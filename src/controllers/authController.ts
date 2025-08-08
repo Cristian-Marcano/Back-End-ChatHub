@@ -1,3 +1,4 @@
+import { handleHttpError } from "../utils/httpErrorHandler";
 import { Request, Response } from "express"
 import { validateCodeEmail } from "../schemas/codeEmailSchemas"
 import { validateUser, validateUserRefine, UserSchema } from "../schemas/userSchemas"
@@ -30,7 +31,7 @@ export class AuthController {
             } else if(error.message === 'EMAIL_EXISTS') {
                 res.status(404).json({ message: 'Email alredy exists' })
             } else {
-                res.status(500).json({message: 'Server error', error})
+                handleHttpError(error, res)
             }
         }
     }
@@ -55,7 +56,7 @@ export class AuthController {
             } else if(error.message === 'CODE_INVALID') {
                 res.status(404).json({message: 'Code invalid'})
             } else {
-                res.status(500).json({message: 'Server error', error})
+                handleHttpError(error, res)
             }
         }
     }
@@ -75,7 +76,7 @@ export class AuthController {
             if(error.message === 'INVALID_CREDENTIALS') {
                 res.status(404).json({message: 'Username or Email or Password is invalid'})
             } else {
-                res.status(500).json({message: 'Server error'})
+                handleHttpError(error, res)
             }
         }
     }
@@ -92,7 +93,7 @@ export class AuthController {
             await this.authService.forgotPassword({input: result.data})
             res.status(200).json({message: 'If the email exists, a recovery code was sent.'})
         } catch(error:any) {
-            res.status(500).json({message: 'Server error'})
+            handleHttpError(error, res)
         }
     }
 
@@ -111,7 +112,7 @@ export class AuthController {
             if (error.message === 'INVALID_OR_EXPIRED_TOKEN') {
                 res.status(400).json({message: 'Token is invalid or has expired'})
             } else {
-                res.status(500).json({message: 'Server error'})
+                handleHttpError(error, res)
             }
         }
     }
@@ -131,7 +132,7 @@ export class AuthController {
             if (error.message === 'INVALID_REFRESH_TOKEN') {
                 res.status(401).json({message: 'Invalid or revoked refresh token'})
             } else {
-                res.status(500).json({message: 'Server error'})
+                handleHttpError(error, res)
             }
         }
     }
@@ -148,7 +149,7 @@ export class AuthController {
             await this.authService.logout({input: result.data})
             res.status(200).json({message: 'Logged out successfully'})
         } catch(error:any) {
-            res.status(500).json({message: 'Server error'})
+            handleHttpError(error, res)
         }
     }
 }

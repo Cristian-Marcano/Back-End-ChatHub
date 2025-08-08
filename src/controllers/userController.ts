@@ -1,3 +1,4 @@
+import { handleHttpError } from "../utils/httpErrorHandler";
 import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { Request, Response } from "express"
@@ -96,7 +97,7 @@ export class UserController {
             }
             res.status(200).json(userInfo)
         } catch (error: any) {
-            res.status(500).json({message: 'Server error', error})
+            handleHttpError(error, res)
         }
     }
 
@@ -118,7 +119,7 @@ export class UserController {
             await this.userService.upsertUserInfo({input: resultSchema.data, id: userId})
             res.status(200).json({message: 'User info was successfully created or updated'})
         } catch (error: any) {
-            res.status(500).json({message: 'Server error', error})
+            handleHttpError(error, res)
         }
     }
 
@@ -145,7 +146,7 @@ export class UserController {
             await this.userService.updateUserInfoOnly({input: resultSchema.data, id: userId})
             res.status(200).json({message: 'User info was successfully partially updated'})
         } catch (error: any) {
-            res.status(500).json({message: 'Server error', error})
+            handleHttpError(error, res)
         }
     }
 
@@ -183,7 +184,7 @@ export class UserController {
                 res.status(409).json({ message });
                 return;
             }
-            res.status(500).json({message: 'Server error', error: error.message})
+            handleHttpError(error, res)
         }
     }
 
@@ -242,7 +243,7 @@ export class UserController {
             res.status(200).json({message: 'Verification codes sent to both emails'})
         } catch (error: any) {
             console.error('Error init email change:', error)
-            res.status(500).json({message: 'Server error', error: error.message})
+            handleHttpError(error, res)
         }
     }
 
@@ -283,7 +284,7 @@ export class UserController {
             res.status(200).json({message: 'Email updated successfully', new_email: request.new_email})
         } catch (error: any) {
             console.error('Error verify email change:', error)
-            res.status(500).json({message: 'Server error', error: error.message})
+            handleHttpError(error, res)
         }
     }
 }
