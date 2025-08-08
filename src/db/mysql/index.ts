@@ -3,7 +3,10 @@ import { CONFIG_MYSQL } from '../../config/keys'
 
 const connectionConfig = CONFIG_MYSQL
 
-const pool = mysql.createPool(connectionConfig)
+const pool = mysql.createPool({
+    ...connectionConfig,
+    timezone: 'Z'
+})
 
 pool.getConnection()
     .then((connection) => {
