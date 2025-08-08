@@ -19,14 +19,14 @@ class FriendshipChatModel implements IFriendshipChatModel {
     }
 
     async getFriendshipChatsByName({input, id}: { input: PaginationNameSchema, id: UUID }): Promise<FriendshipChat[]> {
-        const { page, pageSize } = input
+        const { name, page, pageSize } = input
         const sql = `SELECT c.id AS id, c.create_at AS create_at, IF(f.primary_user_id = UUID_TO_BIN(?), uai1.photo, uai2.photo) AS photo, IF(f.primary_user_id = UUID_TO_BIN(?), 
                     IF(fc.primary_nickname IS NULL, ua1.username, fc.primary_nickname), IF(fc.secondary_nickname IS NULL, ua2.username, fc.secondary_nickname)) AS nickname,
                     IF(f.primary_user_id = UUID_TO_BIN(?), uai1.about, uai2.about) AS about FROM friendship AS f JOIN friendship_chat AS fc ON fc.friendship_id = f.id 
                     JOIN chat AS c ON c.id = fc.chat_id JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
                     JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id 
                     WHERE (f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?)) AND nickname REGEXP ? LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [FriendshipChat[]]
+        const [chats] = await pool.query(sql, [id,id,id,id,id,name,(page - 1) * pageSize, pageSize]) as QueryResult as [FriendshipChat[]]
         return chats
     }
 
