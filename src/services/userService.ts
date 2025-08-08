@@ -23,7 +23,7 @@ export class UserService {
 
     async searchUser({input, id}: {input: PaginationUsernameAndEmailSchema, id: UUID}) {
         const { page, pageSize } = input
-        input.page = (page - 1) * pageSize //* Es necesario para establecer de que registro a que otro obtener los datos en la DB
+        // input.page offset is now handled directly by the model //* Es necesario para establecer de que registro a que otro obtener los datos en la DB
         return this.userInfoModel.getUsersInfo({input, id})
     }
 

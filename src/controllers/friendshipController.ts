@@ -57,7 +57,7 @@ export class FriendshipController {
                 io.to(secondary_user_id).emit(`${namespace}:actionUpdated`, {results: friendship})
             }
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
         }
     }
 
@@ -80,7 +80,7 @@ export class FriendshipController {
                 io.to(secondary_user_id).emit(`${namespace}:accepted`, {results: friendship})
             }
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
         }
     }
 
@@ -115,7 +115,7 @@ export class FriendshipController {
 
             socket.emit(`${namespace}:results`, {results: friendshipsChats})
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
         }
     }
 
@@ -127,7 +127,7 @@ export class FriendshipController {
 
             socket.emit(`${namespace}:results`, {results: requests})
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
         }
     }
 }
