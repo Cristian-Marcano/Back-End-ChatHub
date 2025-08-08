@@ -1,3 +1,4 @@
+import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
 import { NotificationService } from "../services/notificationService"
@@ -33,7 +34,7 @@ export class ChatController {
             socket.emit(`${namespace}:results`, {results: chats})
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -51,7 +52,7 @@ export class ChatController {
             socket.emit(`${namespace}:results`, {results: history})
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -97,7 +98,7 @@ export class ChatController {
             }
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -115,7 +116,7 @@ export class ChatController {
             socket.emit(`${namespace}:viewed`, {message: `Message viewed by: ${id}`})
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -137,7 +138,7 @@ export class ChatController {
             })
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -158,7 +159,7 @@ export class ChatController {
             })
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 

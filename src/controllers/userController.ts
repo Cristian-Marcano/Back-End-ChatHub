@@ -1,3 +1,4 @@
+import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { Request, Response } from "express"
 import { UserService } from "../services/userService"
@@ -32,7 +33,7 @@ export class UserController {
 
             socket.emit(`${namespace}:results`, {results: users})
         } catch(error:any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -50,7 +51,7 @@ export class UserController {
 
             socket.emit(`${namespace}:info-created`, {message: 'User info was created'})
         } catch(error: any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -75,7 +76,7 @@ export class UserController {
 
             socket.emit(`${namespace}:updated`, {message: 'User was updated'})
         } catch(error: any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 

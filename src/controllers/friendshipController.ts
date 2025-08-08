@@ -1,3 +1,4 @@
+import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { FriendshipService } from "../services/friendshipService" 
 import { FriendshipShema, validateFriendship, validateId, validatePartialStates, validateState } from "../schemas/friendshipSchemas" 
@@ -30,11 +31,7 @@ export class FriendshipController {
 
         } catch(error:any) {
             console.error('Error in sentFriendship:', error);
-            if (error.code === 'ER_DUP_ENTRY') {
-                socket.emit('error:server', {message: 'Ya enviaste una solicitud a este usuario o ya son amigos.'})
-            } else {
-                socket.emit('error:server', {message: error.message || 'Server error'})
-            }
+            handleSocketError(error, socket)
         }
     }
 
@@ -57,7 +54,7 @@ export class FriendshipController {
                 io.to(secondary_user_id).emit(`${namespace}:actionUpdated`, {results: friendship})
             }
         } catch(error:any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -80,7 +77,7 @@ export class FriendshipController {
                 io.to(secondary_user_id).emit(`${namespace}:accepted`, {results: friendship})
             }
         } catch(error:any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -103,7 +100,7 @@ export class FriendshipController {
                 io.to(secondary_user_id).emit(`${namespace}:rejected`, {results: friendship})
             }
         } catch(error:any) {
-            socket.emit('error:server', {message: `La solicitud ${id} ha sido rechazada`})
+            handleSocketError(error, socket)
         }
     }
 
@@ -115,7 +112,7 @@ export class FriendshipController {
 
             socket.emit(`${namespace}:results`, {results: friendshipsChats})
         } catch(error:any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -127,7 +124,7 @@ export class FriendshipController {
 
             socket.emit(`${namespace}:results`, {results: requests})
         } catch(error:any) {
-            console.error(error); socket.emit('error:server', {message: error.message || 'Server error'})
+            handleSocketError(error, socket)
         }
     }
 }

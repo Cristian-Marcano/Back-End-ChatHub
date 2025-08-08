@@ -1,3 +1,4 @@
+import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { GroupService } from "../services/groupService"
 import { validateAddMember, validateCreateGroup, validateLeaveGroup } from "../schemas/groupSchemas"
@@ -38,7 +39,7 @@ export class GroupController {
             }
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Error creating group'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -67,7 +68,7 @@ export class GroupController {
             })
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Error adding member to group'})
+            handleSocketError(error, socket)
         }
     }
 
@@ -94,7 +95,7 @@ export class GroupController {
             })
 
         } catch(error:any) {
-            socket.emit('error:server', {message: 'Error leaving group'})
+            handleSocketError(error, socket)
         }
     }
 }
