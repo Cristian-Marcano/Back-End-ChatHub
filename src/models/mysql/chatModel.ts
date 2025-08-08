@@ -58,7 +58,7 @@ export class ChatModel implements IChatModel {
 
     async createChat(conn?: PoolConnection): Promise<number> {
         const execute = conn ?? pool
-        const [result] = await execute.query('INSERT INTO chat DEFAULT VALUES');
+        const [result] = await execute.query('INSERT INTO chat () VALUES ()');
     
         return (result as ResultSetHeader).insertId;
     }
