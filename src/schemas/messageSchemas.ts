@@ -10,6 +10,8 @@ export const chatId = z.number({
     required_error: 'chatId is required'
 }).int('chatId must be a integer').positive('chatId must be positive')
 
+const chatIdSchema = z.object({ chatId })
+
 const messageSchemas = z.object({
     msgText: z.string({
         invalid_type_error: 'msgText must be a string',
@@ -51,7 +53,7 @@ const messageDeleteSchema = z.object({
 export type MessageEditSchema = z.infer<typeof messageEditSchema>
 export type MessageDeleteSchema = z.infer<typeof messageDeleteSchema>
 
-export const validateChatId = (input: object) => chatId.safeParse(input)
+export const validateChatId = (input: object) => chatIdSchema.safeParse(input)
 
 export const validateMessageId = (input: object) => messageId.safeParse(input)
 

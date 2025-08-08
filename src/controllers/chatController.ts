@@ -48,7 +48,7 @@ export class ChatController {
         }
 
         try {
-            const history = await this.chatService.historyChat({id: resultSchema.data})
+            const history = await this.chatService.historyChat({id: resultSchema.data.chatId})
             socket.emit(`${namespace}:results`, {results: history})
 
         } catch(error:any) {
@@ -104,6 +104,7 @@ export class ChatController {
 
     readMessageChat = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
         const { id } = socket.data
+        if (data) data.userId = id
         const resultSchema = validateMessageView(data)
 
         if(!resultSchema.success) {
