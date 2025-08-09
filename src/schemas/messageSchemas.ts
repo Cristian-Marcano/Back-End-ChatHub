@@ -64,3 +64,20 @@ export const validateMessageView = (input: object) => messageViewSchemas.safePar
 export const validateMessageEdit = (input: object) => messageEditSchema.safeParse(input)
 
 export const validateMessageDelete = (input: object) => messageDeleteSchema.safeParse(input)
+const messageSearchSchema = z.object({
+    chatId,
+    query: z.string().min(1, 'query must not be empty'),
+    page: z.number().int().positive().default(1),
+    limit: z.number().int().positive().default(20)
+})
+
+const messageContextSchema = z.object({
+    chatId,
+    targetMessageId: messageId
+})
+
+export type MessageSearchSchema = z.infer<typeof messageSearchSchema>
+export type MessageContextSchema = z.infer<typeof messageContextSchema>
+
+export const validateMessageSearch = (input: object) => messageSearchSchema.safeParse(input)
+export const validateMessageContext = (input: object) => messageContextSchema.safeParse(input)

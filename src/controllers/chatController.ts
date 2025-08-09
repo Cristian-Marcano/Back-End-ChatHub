@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
 import { NotificationService } from "../services/notificationService"
 import { validatePagination } from "../schemas/paginationSchemas"
-import { validateChatId, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete } from "../schemas/messageSchemas"
+import { validateChatId, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete, validateMessageSearch, validateMessageContext } from "../schemas/messageSchemas"
 
 export class ChatController {
     private chatService: ChatService
@@ -142,6 +142,38 @@ export class ChatController {
             handleSocketError(error, socket)
         }
     }
+
+    
+    searchMessages = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const resultSchema = validateMessageSearch(data)
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            const results = await this.chatService.searchMessagesChat({ input: resultSchema.data })
+            socket.emit(`${namespace}:searchResults`, { results })
+        } catch (error: any) {
+            handleSocketError(error, socket)
+        }
+    }
+
+    loadContext = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const resultSchema = validateMessageContext(data)
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            const results = await this.chatService.loadContextChat({ input: resultSchema.data })
+            socket.emit(`${namespace}:contextResults`, { results })
+        } catch (error: any) {
+            handleSocketError(error, socket)
+        }
+    }
+
 
     deleteMessageChat = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
         const { id } = socket.data

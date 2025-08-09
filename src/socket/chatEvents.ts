@@ -30,4 +30,11 @@ export function chatEventsHandler(namespace:string, io: Server, socket: Socket, 
     socket.on(`${namespace}:deleteMessage`, (data)=> {
         chatController.deleteMessageChat(namespace, io, socket, data)
     })
+    socket.on(`${namespace}:searchMessages`, (data)=> {
+        chatController.searchMessages(namespace, io, socket, data)
+    })
+
+    socket.on(`${namespace}:loadContext`, (data)=> {
+        chatController.loadContext(namespace, io, socket, data)
+    })
 }

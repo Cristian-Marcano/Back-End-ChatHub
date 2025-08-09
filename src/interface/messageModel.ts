@@ -1,7 +1,7 @@
 import { UUID } from "node:crypto"
 import { User } from "./userModel"
 import { PoolConnection } from "mysql2/promise"
-import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema } from "../schemas/messageSchemas"
+import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../schemas/messageSchemas"
 
 export interface Message {
     id: number,
@@ -36,4 +36,9 @@ export interface IMessageModel {
     updateMessage(params: {input: MessageEditSchema, userId: UUID}, conn?: PoolConnection): Promise<void>
 
     removeMessage(params: {input: MessageDeleteSchema, userId: UUID}, conn?: PoolConnection): Promise<void>
+
+    searchMessages(params: {input: MessageSearchSchema}): Promise<MessageUser[]>
+    
+    getMessageContext(params: {input: MessageContextSchema}): Promise<MessageUser[]>
+
 }

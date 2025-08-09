@@ -1,7 +1,7 @@
 import { UUID } from "node:crypto"
 import { PoolConnection, QueryResult, ResultSetHeader } from "mysql2/promise"
 import { IMessageModel, MessageUser, MessageViewUser } from "../../interface/messageModel"
-import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema } from "../../schemas/messageSchemas"
+import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../../schemas/messageSchemas"
 import pool from "../../db/mysql"
 
 class MessageModel implements IMessageModel {
@@ -47,6 +47,47 @@ class MessageModel implements IMessageModel {
         // Ensure only the owner can delete the message
         await execute.query('DELETE FROM message WHERE id = ? AND user_sending_id = UUID_TO_BIN(?)', [messageId, userId])
     }
+
+    async searchMessages({input}: {input: MessageSearchSchema}): Promise<MessageUser[]> {
+        const { chatId, query, page, limit } = input
+        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
+                    FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id 
+                    WHERE m.chat_id = ? AND m.msg_text LIKE ? 
+                    ORDER BY m.create_at DESC LIMIT ?, ?`
+        const [messages] = await pool.query(sql, [chatId, `%${query}%`, (page - 1) * limit, limit]) as QueryResult as [MessageUser[]]
+        return messages
+    }
+
+    async getMessageContext({input}: {input: MessageContextSchema}): Promise<MessageUser[]> {
+        const { chatId, targetMessageId } = input
+        
+        // This query fetches up to 15 previous messages, the target message, and up to 15 next messages
+        // using a UNION of three queries.
+        const sql = `(
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
+            FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id 
+            WHERE m.chat_id = ? AND m.id < ? 
+            ORDER BY m.id DESC LIMIT 15
+        )
+        UNION
+        (
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
+            FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id 
+            WHERE m.id = ?
+        )
+        UNION
+        (
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
+            FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id 
+            WHERE m.chat_id = ? AND m.id > ? 
+            ORDER BY m.id ASC LIMIT 15
+        )
+        ORDER BY id ASC`
+        
+        const [messages] = await pool.query(sql, [chatId, targetMessageId, targetMessageId, chatId, targetMessageId]) as QueryResult as [MessageUser[]]
+        return messages
+    }
+
 }
 
 export const messageModel = new MessageModel()

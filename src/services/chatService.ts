@@ -3,7 +3,7 @@ import { IModels } from "../interface/models"
 import { withTransaction } from "../db/mysql/transaction"
 import { IChatModel } from "../interface/chatModel"
 import { PaginationSchema } from "../schemas/paginationSchemas"
-import { ChatId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema } from "../schemas/messageSchemas"
+import { ChatId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../schemas/messageSchemas"
 import { IMessageModel } from "../interface/messageModel"
 
 export class ChatService {
@@ -48,6 +48,15 @@ export class ChatService {
 
     async deleteMessageChat({ input, id }: {input: MessageDeleteSchema, id: UUID}) {
         return await this.messageModel.removeMessage({ input, userId: id })
+    }
+
+    
+    async searchMessagesChat({ input }: {input: MessageSearchSchema}) {
+        return await this.messageModel.searchMessages({ input })
+    }
+
+    async loadContextChat({ input }: {input: MessageContextSchema}) {
+        return await this.messageModel.getMessageContext({ input })
     }
 
     async getChatMembers(chatId: number) {
