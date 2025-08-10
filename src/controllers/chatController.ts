@@ -49,7 +49,7 @@ export class ChatController {
 
         try {
             const history = await this.chatService.historyChat({input: resultSchema.data})
-            socket.emit(`${namespace}:results`, {results: history})
+            socket.emit(`${namespace}:historyResults`, {results: history})
 
         } catch(error:any) {
             handleSocketError(error, socket)
