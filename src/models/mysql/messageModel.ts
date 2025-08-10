@@ -1,14 +1,19 @@
 import { UUID } from "node:crypto"
 import { PoolConnection, QueryResult, ResultSetHeader } from "mysql2/promise"
 import { IMessageModel, MessageUser, MessageViewUser } from "../../interface/messageModel"
-import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../../schemas/messageSchemas"
+import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, ChatHistorySchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../../schemas/messageSchemas"
 import pool from "../../db/mysql"
 
 class MessageModel implements IMessageModel {
-    async getMessagesByChatId({chatId}: { chatId: ChatId }): Promise<MessageUser[]> {
-        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
-                    FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id WHERE m.chat_id = ?`
-        const [messages] = await pool.query(sql, [chatId]) as QueryResult as [MessageUser[]]
+    async getMessagesByChatId({input}: { input: ChatHistorySchema }): Promise<MessageUser[]> {
+        const { chatId, page, limit } = input
+        const sql = `SELECT * FROM (
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
+            FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id 
+            WHERE m.chat_id = ? 
+            ORDER BY m.create_at DESC LIMIT ?, ?
+        ) AS sub ORDER BY create_at ASC`
+        const [messages] = await pool.query(sql, [chatId, (page - 1) * limit, limit]) as QueryResult as [MessageUser[]]
         return messages
     }
 

@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
 import { NotificationService } from "../services/notificationService"
 import { validatePagination } from "../schemas/paginationSchemas"
-import { validateChatId, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete, validateMessageSearch, validateMessageContext } from "../schemas/messageSchemas"
+import { validateChatId, validateChatHistory, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete, validateMessageSearch, validateMessageContext } from "../schemas/messageSchemas"
 
 export class ChatController {
     private chatService: ChatService
@@ -40,7 +40,7 @@ export class ChatController {
 
     history = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
         
-        const resultSchema = validateChatId(data)
+        const resultSchema = validateChatHistory(data)
 
         if(!resultSchema.success) {
             socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
@@ -48,7 +48,7 @@ export class ChatController {
         }
 
         try {
-            const history = await this.chatService.historyChat({id: resultSchema.data.chatId})
+            const history = await this.chatService.historyChat({input: resultSchema.data})
             socket.emit(`${namespace}:results`, {results: history})
 
         } catch(error:any) {

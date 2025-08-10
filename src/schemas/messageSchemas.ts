@@ -12,6 +12,12 @@ export const chatId = z.number({
 
 const chatIdSchema = z.object({ chatId })
 
+const chatHistorySchema = z.object({
+    chatId,
+    page: z.number().int().positive().default(1),
+    limit: z.number().int().positive().default(40)
+})
+
 const messageSchemas = z.object({
     msgText: z.string({
         invalid_type_error: 'msgText must be a string',
@@ -29,6 +35,7 @@ const messageViewSchemas = z.object({
 })
 
 export type ChatId = z.infer<typeof chatId>
+export type ChatHistorySchema = z.infer<typeof chatHistorySchema>
 
 export type MessageId = z.infer<typeof messageId>
 
@@ -54,6 +61,7 @@ export type MessageEditSchema = z.infer<typeof messageEditSchema>
 export type MessageDeleteSchema = z.infer<typeof messageDeleteSchema>
 
 export const validateChatId = (input: object) => chatIdSchema.safeParse(input)
+export const validateChatHistory = (input: object) => chatHistorySchema.safeParse(input)
 
 export const validateMessageId = (input: object) => messageId.safeParse(input)
 

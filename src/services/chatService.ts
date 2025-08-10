@@ -3,7 +3,7 @@ import { IModels } from "../interface/models"
 import { withTransaction } from "../db/mysql/transaction"
 import { IChatModel } from "../interface/chatModel"
 import { PaginationSchema } from "../schemas/paginationSchemas"
-import { ChatId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../schemas/messageSchemas"
+import { ChatHistorySchema, ChatId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../schemas/messageSchemas"
 import { IMessageModel } from "../interface/messageModel"
 
 export class ChatService {
@@ -26,8 +26,8 @@ export class ChatService {
         return await this.chatModel.getChats({ input, id })
     }
 
-    async historyChat({ id }: {id: ChatId}) {
-        return await this.messageModel.getMessagesByChatId({ chatId:id })
+    async historyChat({ input }: {input: ChatHistorySchema}) {
+        return await this.messageModel.getMessagesByChatId({ input })
     }
 
     async typingChat() {

@@ -1,7 +1,7 @@
 import { UUID } from "node:crypto"
 import { User } from "./userModel"
 import { PoolConnection } from "mysql2/promise"
-import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../schemas/messageSchemas"
+import { ChatId, MessageId, MessageSchema, MessageViewSchema, MessageEditSchema, ChatHistorySchema, MessageDeleteSchema, MessageSearchSchema, MessageContextSchema } from "../schemas/messageSchemas"
 
 export interface Message {
     id: number,
@@ -25,7 +25,7 @@ export interface MessageView {
 export type MessageViewUser = Pick<User, "username" | "email"> & MessageView
 
 export interface IMessageModel {
-    getMessagesByChatId(params: {chatId: ChatId}): Promise<MessageUser[]>
+    getMessagesByChatId(params: {input: ChatHistorySchema}): Promise<MessageUser[]>
 
     getMessageViewUser(params: {messageId: MessageId}): Promise<MessageViewUser[]>
 
