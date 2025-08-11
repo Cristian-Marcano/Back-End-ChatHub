@@ -32,6 +32,7 @@ export interface IMessageModel {
     createMessage(params: {input: MessageSchema, id: UUID}): Promise<MessageUser>
 
     createMessageView(params: {input: MessageViewSchema}): Promise<void>
+    markChatAsRead(params: {chatId: number, userId: UUID}): Promise<void>
 
     updateMessage(params: {input: MessageEditSchema, userId: UUID}, conn?: PoolConnection): Promise<void>
 

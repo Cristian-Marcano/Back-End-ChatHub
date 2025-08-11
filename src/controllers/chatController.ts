@@ -102,6 +102,25 @@ export class ChatController {
         }
     }
 
+    
+    markChatAsRead = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const { id } = socket.data
+        const resultSchema = validateChatId(data)
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            await this.chatService.markChatAsReadChat({ chatId: resultSchema.data.chatId, userId: id })
+            // Broadcast to the room that messages were read by this user
+            io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:messagesRead`, { chatId: resultSchema.data.chatId, readBy: id })
+        } catch(error:any) {
+            handleSocketError(error, socket)
+        }
+    }
+
+
     readMessageChat = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
         const { id } = socket.data
         if (data) data.userId = id

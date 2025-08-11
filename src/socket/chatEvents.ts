@@ -19,6 +19,10 @@ export function chatEventsHandler(namespace:string, io: Server, socket: Socket, 
         chatController.sendMessageChat(namespace, io, socket, data)
     })
 
+    socket.on(`${namespace}:markAsRead`, (data)=> {
+        chatController.markChatAsRead(namespace, io, socket, data)
+    })
+
     socket.on(`${namespace}:readMessage`, (data)=> {
         chatController.readMessageChat(namespace, io, socket, data)
     })

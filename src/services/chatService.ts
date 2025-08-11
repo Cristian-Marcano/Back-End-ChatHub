@@ -38,6 +38,10 @@ export class ChatService {
         return await this.messageModel.createMessage({ input, id })
     }
 
+    async markChatAsReadChat({ chatId, userId }: { chatId: number, userId: UUID }) {
+        return await this.messageModel.markChatAsRead({ chatId, userId })
+    }
+
     async readMessageChat({ input }: {input: MessageViewSchema }) {
         return await this.messageModel.createMessageView({ input })
     }
