@@ -7,21 +7,39 @@ import pool from "../../db/mysql"
 export class ChatModel implements IChatModel {
     async getChats({input, id}: {input: PaginationSchema, id: UUID}): Promise<ChatMessage[]> {
         const { page, pageSize } = input
-        const sql = `SELECT c.id AS id, c.create_at AS create_at, 
-                    IF(f.primary_user_id = UUID_TO_BIN(?), uai2.photo, uai1.photo) AS photo, 
-                    IF(f.primary_user_id = UUID_TO_BIN(?), 
-                        IF(fc.primary_nickname IS NULL, ua2.username, fc.primary_nickname), 
-                        IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
-                    ) AS nickname,
-                    'private' AS chat_type,
-                    m.msg_text AS last_message,
-                    m.create_at AS last_message_date 
-                    FROM friendship AS f JOIN friendship_chat AS fc ON fc.friendship_id = f.id JOIN chat AS c ON c.id = fc.chat_id
-                    JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
-                    LEFT JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id LEFT JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id
-                    LEFT JOIN message AS m ON m.id = (SELECT id FROM message WHERE chat_id = c.id ORDER BY create_at DESC LIMIT 1)
-                    WHERE f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?) LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
+        const sql = `SELECT * FROM (
+            SELECT c.id AS id, c.create_at AS create_at, 
+            IF(f.primary_user_id = UUID_TO_BIN(?), uai2.photo, uai1.photo) AS photo, 
+            IF(f.primary_user_id = UUID_TO_BIN(?), 
+                IF(fc.primary_nickname IS NULL, ua2.username, fc.primary_nickname), 
+                IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
+            ) AS nickname,
+            'private' AS chat_type,
+            m.msg_text AS last_message,
+            m.create_at AS last_message_date 
+            FROM friendship AS f JOIN friendship_chat AS fc ON fc.friendship_id = f.id JOIN chat AS c ON c.id = fc.chat_id
+            JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
+            LEFT JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id LEFT JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id
+            LEFT JOIN message AS m ON m.id = (SELECT id FROM message WHERE chat_id = c.id ORDER BY create_at DESC LIMIT 1)
+            WHERE f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?)
+            
+            UNION ALL
+            
+            SELECT c.id AS id, c.create_at AS create_at, 
+            NULL AS photo, 
+            gc.nickname AS nickname,
+            'group' AS chat_type,
+            m.msg_text AS last_message,
+            m.create_at AS last_message_date 
+            FROM group_chat AS gc
+            JOIN chat AS c ON c.id = gc.chat_id
+            JOIN group_members AS gm ON gm.group_chat_id = gc.id
+            LEFT JOIN message AS m ON m.id = (SELECT id FROM message WHERE chat_id = c.id ORDER BY create_at DESC LIMIT 1)
+            WHERE gm.member_id = UUID_TO_BIN(?)
+        ) AS combined
+        ORDER BY COALESCE(last_message_date, create_at) DESC
+        LIMIT ?, ?`
+        const [chats] = await pool.query(sql, [id,id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
         return chats
     }
 
@@ -47,23 +65,40 @@ export class ChatModel implements IChatModel {
 
     async getChatsByName({input, id}: {input: PaginationNameSchema, id: UUID}): Promise<ChatMessage[]> {
         const { name, page, pageSize } = input
-        const sql = `SELECT c.id AS id, c.create_at AS create_at, 
-                    IF(f.primary_user_id = UUID_TO_BIN(?), uai2.photo, uai1.photo) AS photo, 
-                    IF(f.primary_user_id = UUID_TO_BIN(?), 
-                        IF(fc.primary_nickname IS NULL, ua2.username, fc.primary_nickname), 
-                        IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
-                    ) AS nickname,
-                    'private' AS chat_type,
-                    m.msg_text AS last_message,
-                    m.create_at AS last_message_date
-                    
-                    FROM friendship AS f JOIN friendship_chat AS fc ON fc.friendship_id = f.id JOIN chat AS c ON c.id = fc.chat_id
-                    JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
-                    LEFT JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id LEFT JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id
-                    LEFT JOIN message AS m ON m.id = (SELECT id FROM message WHERE chat_id = c.id ORDER BY create_at DESC LIMIT 1)
-                    WHERE f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?)
-                    HAVING (nickname REGEXP ?) LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,name,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
+        const sql = `SELECT * FROM (
+            SELECT c.id AS id, c.create_at AS create_at, 
+            IF(f.primary_user_id = UUID_TO_BIN(?), uai2.photo, uai1.photo) AS photo, 
+            IF(f.primary_user_id = UUID_TO_BIN(?), 
+                IF(fc.primary_nickname IS NULL, ua2.username, fc.primary_nickname), 
+                IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
+            ) AS nickname,
+            'private' AS chat_type,
+            m.msg_text AS last_message,
+            m.create_at AS last_message_date 
+            FROM friendship AS f JOIN friendship_chat AS fc ON fc.friendship_id = f.id JOIN chat AS c ON c.id = fc.chat_id
+            JOIN user_account AS ua1 ON f.primary_user_id = ua1.id JOIN user_account AS ua2 ON f.secondary_user_id = ua2.id 
+            LEFT JOIN user_account_info AS uai1 ON ua1.id = uai1.user_id LEFT JOIN user_account_info AS uai2 ON ua2.id = uai2.user_id
+            LEFT JOIN message AS m ON m.id = (SELECT id FROM message WHERE chat_id = c.id ORDER BY create_at DESC LIMIT 1)
+            WHERE f.primary_user_id = UUID_TO_BIN(?) OR f.secondary_user_id = UUID_TO_BIN(?)
+            
+            UNION ALL
+            
+            SELECT c.id AS id, c.create_at AS create_at, 
+            NULL AS photo, 
+            gc.nickname AS nickname,
+            'group' AS chat_type,
+            m.msg_text AS last_message,
+            m.create_at AS last_message_date 
+            FROM group_chat AS gc
+            JOIN chat AS c ON c.id = gc.chat_id
+            JOIN group_members AS gm ON gm.group_chat_id = gc.id
+            LEFT JOIN message AS m ON m.id = (SELECT id FROM message WHERE chat_id = c.id ORDER BY create_at DESC LIMIT 1)
+            WHERE gm.member_id = UUID_TO_BIN(?)
+        ) AS combined
+        WHERE nickname REGEXP ?
+        ORDER BY COALESCE(last_message_date, create_at) DESC
+        LIMIT ?, ?`
+        const [chats] = await pool.query(sql, [id,id,id,id,id,name,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
         return chats
     }
 
