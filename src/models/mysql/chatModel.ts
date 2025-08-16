@@ -10,6 +10,7 @@ export class ChatModel implements IChatModel {
         const sql = `SELECT * FROM (
             SELECT c.id AS id, c.create_at AS create_at, 
             IF(f.primary_user_id = UUID_TO_BIN(?), uai2.photo, uai1.photo) AS photo, 
+            BIN_TO_UUID(IF(f.primary_user_id = UUID_TO_BIN(?), f.secondary_user_id, f.primary_user_id)) AS friend_id,
             IF(f.primary_user_id = UUID_TO_BIN(?), 
                 IF(fc.primary_nickname IS NULL, ua2.username, fc.primary_nickname), 
                 IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
@@ -27,6 +28,7 @@ export class ChatModel implements IChatModel {
             
             SELECT c.id AS id, c.create_at AS create_at, 
             NULL AS photo, 
+            NULL AS friend_id,
             gc.nickname AS nickname,
             'group' AS chat_type,
             m.msg_text AS last_message,
@@ -39,7 +41,7 @@ export class ChatModel implements IChatModel {
         ) AS combined
         ORDER BY COALESCE(last_message_date, create_at) DESC
         LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
+        const [chats] = await pool.query(sql, [id,id,id,id,id,id,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
         return chats
     }
 
@@ -68,6 +70,7 @@ export class ChatModel implements IChatModel {
         const sql = `SELECT * FROM (
             SELECT c.id AS id, c.create_at AS create_at, 
             IF(f.primary_user_id = UUID_TO_BIN(?), uai2.photo, uai1.photo) AS photo, 
+            BIN_TO_UUID(IF(f.primary_user_id = UUID_TO_BIN(?), f.secondary_user_id, f.primary_user_id)) AS friend_id,
             IF(f.primary_user_id = UUID_TO_BIN(?), 
                 IF(fc.primary_nickname IS NULL, ua2.username, fc.primary_nickname), 
                 IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
@@ -85,6 +88,7 @@ export class ChatModel implements IChatModel {
             
             SELECT c.id AS id, c.create_at AS create_at, 
             NULL AS photo, 
+            NULL AS friend_id,
             gc.nickname AS nickname,
             'group' AS chat_type,
             m.msg_text AS last_message,
@@ -98,7 +102,7 @@ export class ChatModel implements IChatModel {
         WHERE nickname REGEXP ?
         ORDER BY COALESCE(last_message_date, create_at) DESC
         LIMIT ?, ?`
-        const [chats] = await pool.query(sql, [id,id,id,id,id,name,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
+        const [chats] = await pool.query(sql, [id,id,id,id,id,id,name,(page - 1) * pageSize, pageSize]) as QueryResult as [ChatMessage[]]
         return chats
     }
 
