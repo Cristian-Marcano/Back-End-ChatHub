@@ -68,6 +68,18 @@ export class FriendshipService {
         return await this.friendshipModel.getFriendshipsByUserId({ state, id })
     }
 
+    
+    async blockUserByChatId({ chatId }: {chatId: number}) {
+        const friendshipId = await this.friendshipChatModel.getFriendshipIdByChatId({ chatId });
+        if (!friendshipId) throw new Error("Friendship not found for this chat");
+        
+        const input:StateSchema = { primary_state: 'accepted', secondary_state: 'blocked' }
+        await this.friendshipModel.updateFriendship({ input, id: friendshipId })
+        const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId })
+        return friendship
+    }
+
+
     async infoUserSecondary({ id }: {id: UserId}){
         return await this.userInfoModel.getUserInfoById({ id: id as UUID })
     }

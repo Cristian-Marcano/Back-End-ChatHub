@@ -16,5 +16,6 @@ export interface IFriendshipChatModel {
 
     updateFriendshipChat(params: {input: NicknamesPartialSchema, id: number}, conn?: PoolConnection): Promise<void>
 
-    removeFriendshipChat(params: {id: number}, conn?: PoolConnection): Promise<void>
+    removeFriendshipChat({id}: { id: number }, conn?: import("mysql2/promise").PoolConnection): Promise<void>
+    getFriendshipIdByChatId({chatId}: {chatId: number}): Promise<number | null>
 }

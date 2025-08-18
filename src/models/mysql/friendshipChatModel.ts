@@ -5,7 +5,8 @@ import { FriendshipChatSchema, NicknamesPartialSchema } from "../../schemas/frie
 import { FriendshipChat, IFriendshipChatModel } from "../../interface/friendshipChatModel"
 import pool from "../../db/mysql"
 
-class FriendshipChatModel implements IFriendshipChatModel {
+class FriendshipChatModel {
+
     async getFriendshipChats({input, id}: { input: PaginationSchema, id: UUID }): Promise<FriendshipChat[]> {
         const { page, pageSize } = input
         const sql = `SELECT c.id AS id, c.create_at AS create_at, IF(f.primary_user_id = UUID_TO_BIN(?), uai1.photo, uai2.photo) AS photo, IF(f.primary_user_id = UUID_TO_BIN(?), 
@@ -45,6 +46,16 @@ class FriendshipChatModel implements IFriendshipChatModel {
         const execute = conn ?? pool
         await execute.query('DELETE FROM friendship_chat WHERE id = ?', [id])
     }
+
+    async getFriendshipIdByChatId({chatId}: {chatId: number}): Promise<number | null> {
+        const execute = pool
+        const sql = `SELECT friendship_id FROM friendship_chat WHERE chat_id = ?`
+        const [rows] = await execute.query(sql, [chatId]) as any
+        if (rows.length === 0) return null
+        return rows[0].friendship_id
+    }
+
 }
 
-export const friendshipChatModel = new FriendshipChatModel()
+
+    export const friendshipChatModel = new FriendshipChatModel()

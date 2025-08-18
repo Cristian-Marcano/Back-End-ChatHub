@@ -19,6 +19,10 @@ export function friendshipEventsHandler(namespace:string, io: Server, socket: So
         friendshipController.rejection(namespace, io, socket, data)
     })
 
+    socket.on(`${namespace}:block`, (data)=> {
+        friendshipController.block(namespace, io, socket, data)
+    })
+
     socket.on(`${namespace}:load`, (data)=> { //Muestra las relaciones de amistad ya establecidas
         friendshipController.load(namespace, io, socket, data)
     })

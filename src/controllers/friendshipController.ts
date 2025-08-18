@@ -104,6 +104,26 @@ export class FriendshipController {
         }
     }
 
+    
+    block = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const { chatId } = data
+        if (!chatId) return;
+
+        try {
+            const friendship = await this.friendshipService.blockUserByChatId({chatId: Number(chatId)})
+
+            if (friendship) {
+                const { primary_user_id, secondary_user_id } = friendship as { primary_user_id: string, secondary_user_id: string }
+                // Emitir a ambos que la relación fue bloqueada
+                io.to(primary_user_id).emit(`${namespace}:blocked`, {results: friendship})
+                io.to(secondary_user_id).emit(`${namespace}:blocked`, {results: friendship})
+            }
+        } catch(error:any) {
+            handleSocketError(error, socket)
+        }
+    }
+
+
     load = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
         const { id } = socket.data
 
