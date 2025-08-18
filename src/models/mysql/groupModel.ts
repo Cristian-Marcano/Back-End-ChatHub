@@ -36,7 +36,7 @@ class GroupModel implements IGroupModel {
         const { chatId, memberId } = input
         
         // Obtenemos el group_chat_id a partir del chat_id
-        const groupChat = await this.getGroupByChatId({chatId})
+        const groupChat = await this.getGroupByChatId({chatId}, conn)
         if (!groupChat) throw new Error('Group chat not found')
         
         await execute.query(
@@ -49,7 +49,7 @@ class GroupModel implements IGroupModel {
         const execute = conn ?? pool
         const { chatId } = input
         
-        const groupChat = await this.getGroupByChatId({chatId})
+        const groupChat = await this.getGroupByChatId({chatId}, conn)
         if (!groupChat) throw new Error('Group chat not found')
         
         await execute.query(
@@ -68,10 +68,11 @@ class GroupModel implements IGroupModel {
         return members
     }
 
-    async getGroupByChatId({chatId}: {chatId: ChatId}): Promise<GroupChat | null> {
+    async getGroupByChatId({chatId}: {chatId: ChatId}, conn?: import('mysql2/promise').PoolConnection): Promise<GroupChat | null> {
+        const execute = conn ?? pool;
         const sql = `SELECT id, nickname, BIN_TO_UUID(create_by) AS create_by, chat_id 
                      FROM group_chat WHERE chat_id = ?`
-        const [groups] = await pool.query(sql, [chatId]) as QueryResult as [GroupChat[]]
+        const [groups] = await execute.query(sql, [chatId]) as QueryResult as [GroupChat[]]
         if (groups.length === 0) return null
         return groups[0]
     }
