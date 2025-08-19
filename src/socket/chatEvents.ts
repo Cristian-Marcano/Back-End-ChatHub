@@ -7,6 +7,10 @@ export function chatEventsHandler(namespace:string, io: Server, socket: Socket, 
         chatController.getAll(namespace, io, socket, data)
     })
 
+    socket.on(`${namespace}:searchChats`, (data)=> {
+        chatController.searchChats(namespace, io, socket, data)
+    })
+
     socket.on(`${namespace}:history`, (data)=> {
         chatController.history(namespace, io, socket, data)
     })

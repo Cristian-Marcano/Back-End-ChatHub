@@ -2,7 +2,7 @@ import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
 import { NotificationService } from "../services/notificationService"
-import { validatePagination } from "../schemas/paginationSchemas"
+import { validatePagination, validatePaginationName } from "../schemas/paginationSchemas"
 import { validateChatId, validateChatHistory, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete, validateMessageSearch, validateMessageContext } from "../schemas/messageSchemas"
 
 export class ChatController {
@@ -33,6 +33,27 @@ export class ChatController {
 
             socket.emit(`${namespace}:results`, {results: chats})
 
+        } catch(error:any) {
+            handleSocketError(error, socket)
+        }
+    }
+
+    
+    searchChats = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
+        const { id } = socket.data
+        const resultSchema = validatePaginationName(data)
+
+        if(!resultSchema.success) {
+            socket.emit('error:validate', {error: JSON.parse(resultSchema.error.message)})
+            return
+        }
+
+        try {
+            const chats = await this.chatService.getChatsByName({input: resultSchema.data, id})
+
+            chats.forEach(chat => socket.join(chat.id.toString()))
+
+            socket.emit(`${namespace}:searchedChats`, {results: chats})
         } catch(error:any) {
             handleSocketError(error, socket)
         }

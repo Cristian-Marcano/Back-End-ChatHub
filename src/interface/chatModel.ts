@@ -21,7 +21,7 @@ export interface IChatModel {
 
     getChatById(params: {idChat: number, id: UUID}): Promise<ChatMessage[]>
 
-    getChatsByName(params: {input: PaginationNameSchema}): Promise<ChatMessage[]>
+    getChatsByName(params: {input: PaginationNameSchema, id: import("node:crypto").UUID}): Promise<ChatMessage[]>
 
     createChat(conn?: PoolConnection): Promise<number>
 
