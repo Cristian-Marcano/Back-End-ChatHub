@@ -13,7 +13,9 @@ export interface Chat {
 
 export type ChatMessage = Pick<MessageUser, "user_sending_id" | "msg_text" | "censored" | "username" | "email"> & Chat & {
     msg_create_at: Date,
-    msg_update_at: Date|null
+    msg_update_at: Date|null,
+    primary_state?: string,
+    secondary_state?: string
 }
 
 export interface IChatModel {

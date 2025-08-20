@@ -76,8 +76,8 @@ export class FriendshipService {
         const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId });
         if (!friendship) throw new Error("Friendship not found");
         
-        let primary_state = friendship.primary_state;
-        let secondary_state = friendship.secondary_state;
+        let primary_state = friendship.primary_state as "pending" | "blocked" | "accepted";
+        let secondary_state = friendship.secondary_state as "pending" | "blocked" | "accepted";
         
         if (friendship.primary_user_id === userId && primary_state === 'blocked') {
             primary_state = 'accepted';
@@ -98,8 +98,8 @@ export class FriendshipService {
         const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId });
         if (!friendship) throw new Error("Friendship not found");
         
-        let primary_state = friendship.primary_state;
-        let secondary_state = friendship.secondary_state;
+        let primary_state = friendship.primary_state as "pending" | "blocked" | "accepted";
+        let secondary_state = friendship.secondary_state as "pending" | "blocked" | "accepted";
         
         if (friendship.primary_user_id === userId) {
             primary_state = 'blocked';
@@ -109,8 +109,8 @@ export class FriendshipService {
         
         const input:StateSchema = { primary_state, secondary_state }
         await this.friendshipModel.updateFriendship({ input, id: friendshipId })
-        const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId })
-        return friendship
+        const [updatedFriendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId })
+        return updatedFriendship
     }
 
 

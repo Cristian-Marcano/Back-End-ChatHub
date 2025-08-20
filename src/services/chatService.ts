@@ -42,7 +42,7 @@ export class ChatService {
     async sendMessageChat({ input, id }: {input: MessageSchema, id: UUID}) {
         // Prevent sending if blocked
         const chats = await this.chatModel.getChatById({ idChat: input.chatId, id });
-        if (chats.length > 0 && chats[0].friendship_state === 'blocked') {
+        if (chats.length > 0 && (chats[0].primary_state === 'blocked' || chats[0].secondary_state === 'blocked')) {
             throw new Error('No se pueden enviar mensajes. El usuario te ha bloqueado o lo has bloqueado.');
         }
         return await this.messageModel.createMessage({ input, id })
