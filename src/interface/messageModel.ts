@@ -13,7 +13,7 @@ export interface Message {
     censored: boolean
 }
 
-export type MessageUser = Pick<User, "username" | "email"> & Message
+export type MessageUser = Pick<User, "username" | "email"> & { nickname?: string, photo?: string } & Message
 
 export interface MessageView {
     id: number,
