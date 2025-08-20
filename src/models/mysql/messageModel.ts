@@ -8,9 +8,10 @@ class MessageModel implements IMessageModel {
     async getMessagesByChatId({input}: { input: ChatHistorySchema }): Promise<MessageUser[]> {
         const { chatId, page, limit } = input
         const sql = `SELECT * FROM (
-            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status 
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, uai.full_name AS nickname, uai.photo, IF(mv.id IS NOT NULL, 'read', 'sent') AS status 
             FROM message AS m 
             JOIN user_account AS ua ON m.user_sending_id = ua.id 
+            LEFT JOIN user_account_info AS uai ON m.user_sending_id = uai.user_id
             LEFT JOIN message_view AS mv ON mv.message_id = m.id AND mv.user_id != m.user_sending_id
             WHERE m.chat_id = ? 
             ORDER BY m.create_at DESC LIMIT ?, ?
