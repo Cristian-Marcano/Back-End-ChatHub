@@ -69,11 +69,45 @@ export class FriendshipService {
     }
 
     
-    async blockUserByChatId({ chatId }: {chatId: number}) {
+    async unblockUserByChatId({ chatId, userId }: {chatId: number, userId: UUID}) {
         const friendshipId = await this.friendshipChatModel.getFriendshipIdByChatId({ chatId });
         if (!friendshipId) throw new Error("Friendship not found for this chat");
         
-        const input:StateSchema = { primary_state: 'accepted', secondary_state: 'blocked' }
+        const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId });
+        if (!friendship) throw new Error("Friendship not found");
+        
+        let primary_state = friendship.primary_state;
+        let secondary_state = friendship.secondary_state;
+        
+        if (friendship.primary_user_id === userId && primary_state === 'blocked') {
+            primary_state = 'accepted';
+        } else if (friendship.secondary_user_id === userId && secondary_state === 'blocked') {
+            secondary_state = 'accepted';
+        }
+        
+        const input:StateSchema = { primary_state, secondary_state }
+        await this.friendshipModel.updateFriendship({ input, id: friendshipId })
+        const [updatedFriendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId })
+        return updatedFriendship
+    }
+
+    async blockUserByChatId({ chatId, userId }: {chatId: number, userId: UUID}) {
+        const friendshipId = await this.friendshipChatModel.getFriendshipIdByChatId({ chatId });
+        if (!friendshipId) throw new Error("Friendship not found for this chat");
+        
+        const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId });
+        if (!friendship) throw new Error("Friendship not found");
+        
+        let primary_state = friendship.primary_state;
+        let secondary_state = friendship.secondary_state;
+        
+        if (friendship.primary_user_id === userId) {
+            primary_state = 'blocked';
+        } else if (friendship.secondary_user_id === userId) {
+            secondary_state = 'blocked';
+        }
+        
+        const input:StateSchema = { primary_state, secondary_state }
         await this.friendshipModel.updateFriendship({ input, id: friendshipId })
         const [friendship] = await this.friendshipModel.getFriendshipById({ id: friendshipId })
         return friendship

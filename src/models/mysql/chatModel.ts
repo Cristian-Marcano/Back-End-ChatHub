@@ -16,6 +16,9 @@ export class ChatModel implements IChatModel {
                 IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
             ) AS nickname,
             'private' AS chat_type,
+            BIN_TO_UUID(f.primary_user_id) AS primary_user_id,
+            f.primary_state,
+            f.secondary_state,
             f.secondary_state AS friendship_state,
             m.msg_text AS last_message,
             m.create_at AS last_message_date 
@@ -32,6 +35,9 @@ export class ChatModel implements IChatModel {
             NULL AS friend_id,
             gc.nickname AS nickname,
             'group' AS chat_type,
+            NULL AS primary_user_id,
+            NULL AS primary_state,
+            NULL AS secondary_state,
             NULL AS friendship_state,
             m.msg_text AS last_message,
             m.create_at AS last_message_date 
@@ -55,6 +61,9 @@ export class ChatModel implements IChatModel {
                         IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
                     ) AS nickname,
                     'private' AS chat_type,
+            BIN_TO_UUID(f.primary_user_id) AS primary_user_id,
+            f.primary_state,
+            f.secondary_state,
             f.secondary_state AS friendship_state,
                     m.msg_text AS last_message,
                     m.create_at AS last_message_date
@@ -79,6 +88,9 @@ export class ChatModel implements IChatModel {
                 IF(fc.secondary_nickname IS NULL, ua1.username, fc.secondary_nickname)
             ) AS nickname,
             'private' AS chat_type,
+            BIN_TO_UUID(f.primary_user_id) AS primary_user_id,
+            f.primary_state,
+            f.secondary_state,
             f.secondary_state AS friendship_state,
             m.msg_text AS last_message,
             m.create_at AS last_message_date 
@@ -95,6 +107,9 @@ export class ChatModel implements IChatModel {
             NULL AS friend_id,
             gc.nickname AS nickname,
             'group' AS chat_type,
+            NULL AS primary_user_id,
+            NULL AS primary_state,
+            NULL AS secondary_state,
             NULL AS friendship_state,
             m.msg_text AS last_message,
             m.create_at AS last_message_date 
