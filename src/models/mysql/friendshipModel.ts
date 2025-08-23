@@ -24,10 +24,11 @@ class FriendshipModel implements IFriendshipModel {
         return friendship
     }
 
-    async createFriendship({input}: {input: FriendshipShema}, conn?: PoolConnection): Promise<void> {
+    async createFriendship({input}: {input: FriendshipShema}, conn?: PoolConnection): Promise<number> {
         const execute = conn ?? pool, {primary_user_id, secondary_user_id, primary_state, secondary_state} = input
-        await execute.query('INSERT INTO friendship(primary_user_id, secondary_user_id, primary_state, secondary_state) VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?)', 
-                            [primary_user_id, secondary_user_id, primary_state, secondary_state])
+        const [result] = await execute.query('INSERT INTO friendship(primary_user_id, secondary_user_id, primary_state, secondary_state) VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?, ?)', 
+                            [primary_user_id, secondary_user_id, primary_state, secondary_state]) as any
+        return result.insertId
     }
 
     async updateFriendship({input, id}: {input: StateSchema, id: number}, conn?: PoolConnection): Promise<void> {

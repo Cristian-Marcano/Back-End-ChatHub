@@ -34,7 +34,7 @@ export interface IFriendshipModel {
 
     getFriendshipsByUserId(params: {state: State, id: UUID | UserId}): Promise<FriendshipUser[]>
 
-    createFriendship(params: {input: FriendshipShema}, conn?: PoolConnection): Promise<void>
+    createFriendship(params: {input: FriendshipShema}, conn?: PoolConnection): Promise<number>
 
     updateFriendship(params: {input: StateSchema, id: number}, conn?: PoolConnection): Promise<void>
 

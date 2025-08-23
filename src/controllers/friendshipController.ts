@@ -11,8 +11,14 @@ export class FriendshipController {
     }
 
     sent = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
-        const { id } = socket.data
-        data.primary_user_id = id
+        const { id } = socket.data;
+        const targetId = data.secondary_user_id;
+        
+        // Fix for check_user_order constraint: primary_user_id MUST be < secondary_user_id
+        const isPrimary = id < targetId;
+        data.primary_user_id = isPrimary ? id : targetId;
+        data.secondary_user_id = isPrimary ? targetId : id;
+        
         const resultSchema = validateFriendship(data)
 
         if(!resultSchema.success) {
@@ -21,13 +27,19 @@ export class FriendshipController {
         }
 
         try {
-            await this.friendshipService.sentFriendship({input:resultSchema.data})
+            const friendshipId = await this.friendshipService.sentFriendship({input:resultSchema.data})
 
-            const { secondary_user_id } = resultSchema.data
-            const data_secondary_user = await this.friendshipService.infoUserSecondary({id: secondary_user_id })
+            const data_sender_user = await this.friendshipService.infoUserSecondary({id: id });
+            
+            const payload = data_sender_user && data_sender_user.length > 0 ? {
+                ...data_sender_user[0],
+                id: friendshipId // Overwrite user ID with friendship ID so the frontend can accept/reject using the correct ID
+            } : null;
 
-            socket.emit(`${namespace}:received`, {message: 'Server registered friendship'})
-            io.to(secondary_user_id).emit(`${namespace}:newRequest`, {results: data_secondary_user})
+            socket.emit(`${namespace}:received`, {message: 'Server registered friendship'});
+            if (payload) {
+                io.to(targetId).emit(`${namespace}:newRequest`, {results: payload});
+            }
 
         } catch(error:any) {
             console.error('Error in sentFriendship:', error);
