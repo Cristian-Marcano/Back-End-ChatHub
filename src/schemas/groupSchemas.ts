@@ -36,3 +36,27 @@ export type LeaveGroupSchema = z.infer<typeof leaveGroupSchema>
 export const validateCreateGroup = (input: object) => createGroupSchema.safeParse(input)
 export const validateAddMember = (input: object) => addMemberSchema.safeParse(input)
 export const validateLeaveGroup = (input: object) => leaveGroupSchema.safeParse(input)
+
+const kickMemberSchema = z.object({
+    chatId,
+    targetId: userId
+})
+
+const updateRoleSchema = z.object({
+    chatId,
+    targetId: userId,
+    newRole: z.enum(['member', 'admin'])
+})
+
+const updateSettingsSchema = z.object({
+    chatId,
+    add_user_permission: z.enum(['admin', 'all'])
+})
+
+export type KickMemberSchema = z.infer<typeof kickMemberSchema>
+export type UpdateRoleSchema = z.infer<typeof updateRoleSchema>
+export type UpdateSettingsSchema = z.infer<typeof updateSettingsSchema>
+
+export const validateKickMember = (input: object) => kickMemberSchema.safeParse(input)
+export const validateUpdateRole = (input: object) => updateRoleSchema.safeParse(input)
+export const validateUpdateSettings = (input: object) => updateSettingsSchema.safeParse(input)

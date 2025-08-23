@@ -8,6 +8,7 @@ export interface GroupChat {
     nickname: string
     create_by: UUID
     chat_id: number
+    add_user_permission: 'admin' | 'all'
 }
 
 export interface GroupMember {
@@ -15,6 +16,9 @@ export interface GroupMember {
     member_id: UUID
     group_chat_id: number
     joined_at: Date
+    role: 'member' | 'admin' | 'owner'
+    full_name?: string
+    photo?: string | null
 }
 
 export interface IGroupModel {
@@ -29,5 +33,7 @@ export interface IGroupModel {
     getGroupMembers(params: {chatId: ChatId}): Promise<GroupMember[]>
     
     // Obtiene información de un grupo mediante el chatId
-    getGroupByChatId(params: {chatId: ChatId}): Promise<GroupChat | null>
+    getGroupByChatId(params: {chatId: ChatId}, conn?: PoolConnection): Promise<GroupChat | null>
+    updateMemberRole(params: {chatId: number, memberId: UUID, role: 'member' | 'admin'}): Promise<void>
+    updateGroupSettings(params: {chatId: number, add_user_permission: 'admin' | 'all'}): Promise<void>
 }
