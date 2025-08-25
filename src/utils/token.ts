@@ -2,8 +2,12 @@ import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import crypto, { UUID } from 'node:crypto'
 
-const SECRET_KEY = process.env.SECRET_KEY ?? '$mAM4ÑE&r5/*XQL0'
-const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY ?? '$mAM4ÑE&r5/*XQL1'
+const SECRET_KEY = process.env.SECRET_KEY as string
+const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY as string
+
+if (!SECRET_KEY || !REFRESH_SECRET_KEY) {
+  console.warn('WARNING: SECRET_KEY or REFRESH_SECRET_KEY is not defined in .env');
+}
 
 export const assignToken = ({id}: {id:UUID | string}) => jwt.sign({id}, SECRET_KEY, {algorithm: 'HS256', expiresIn: '15m'})
 

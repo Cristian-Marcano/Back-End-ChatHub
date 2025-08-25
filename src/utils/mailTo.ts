@@ -22,10 +22,9 @@ export const mailTo = async(to:string, subject:string, text:string, html?:string
 
     try {
         const info = await transport.sendMail(mailOptions)
-        console.log(info.response)
         return { info }
     } catch(error) {
-        console.log("Error sending email: ", error)
+        console.error('Error sending email: ', error)
         throw error
     }
 }

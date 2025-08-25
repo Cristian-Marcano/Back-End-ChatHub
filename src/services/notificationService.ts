@@ -54,7 +54,6 @@ export class NotificationService {
                 } catch (error: any) {
                     if (error.statusCode === 404 || error.statusCode === 410) {
                         // The subscription has expired or is no longer valid
-                        console.log(`Subscription ${sub.endpoint} expired or is invalid. Removing...`)
                         await this.pushSubscriptionsModel.removeSubscription({ userId, endpoint: sub.endpoint })
                     } else {
                         console.error('Error sending push notification:', error)
@@ -62,7 +61,6 @@ export class NotificationService {
                 }
             } else {
                 // Here you would add Mobile FCM/APNs logic in the future
-                console.log(`Device type ${sub.device_type} not implemented for push yet.`)
             }
         }
     }
