@@ -8,7 +8,9 @@
     "build": "tsc --project tsconfig.json",
     "dev": "tsc -w",
     "serve": "node -r dotenv/config --watch dist/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "Cristian-Marcano",
@@ -40,7 +42,8 @@
     "@types/web-push": "^3.6.4",
     "morgan": "1.10.0",
     "rimraf": "6.0.1",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vitest": "^5.0.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
