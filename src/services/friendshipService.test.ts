@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FriendshipService } from './friendshipService';
+import { IFriendshipModel } from '../interface/friendshipModel';
+import { IChatModel } from '../interface/chatModel';
+import { IUserInfoModel } from '../interface/userInfoModel';
+import { IFriendshipChatModel } from '../interface/friendshipChatModel';
 
 vi.mock('../db/mysql/transaction', () => ({
   withTransaction: vi.fn(async (callback) => {
@@ -8,10 +12,10 @@ vi.mock('../db/mysql/transaction', () => ({
 }));
 
 describe('FriendshipService', () => {
-  let mockFriendshipModel: any;
-  let mockChatModel: any;
-  let mockUserInfoModel: any;
-  let mockFriendshipChatModel: any;
+  let mockFriendshipModel: vi.Mocked<IFriendshipModel>;
+  let mockChatModel: vi.Mocked<IChatModel>;
+  let mockUserInfoModel: vi.Mocked<IUserInfoModel>;
+  let mockFriendshipChatModel: vi.Mocked<IFriendshipChatModel>;
   let friendshipService: FriendshipService;
 
   beforeEach(() => {

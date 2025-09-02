@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthService } from './authService';
+import { IUserModel } from '../interface/userModel';
+import { ITempEmailsModel } from '../interface/tempEmailsModel';
+import { IRefreshTokensModel } from '../interface/refreshTokensModel';
 import * as passwordUtils from '../utils/password';
 import * as tokenUtils from '../utils/token';
 import * as mailToUtils from '../utils/mailTo';
@@ -19,10 +22,10 @@ vi.mock('../utils/mailTo', () => ({
 }));
 
 describe('AuthService', () => {
-  let mockUserModel: any;
-  let mockTempEmailsModel: any;
+  let mockUserModel: vi.Mocked<IUserModel>;
+  let mockTempEmailsModel: vi.Mocked<ITempEmailsModel>;
   let mockPasswordResetsModel: any;
-  let mockRefreshTokensModel: any;
+  let mockRefreshTokensModel: vi.Mocked<IRefreshTokensModel>;
   let authService: AuthService;
 
   beforeEach(() => {
