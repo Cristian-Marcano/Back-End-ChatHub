@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 import { FriendshipService } from './friendshipService';
 import { IFriendshipModel } from '../interface/friendshipModel';
 import { IChatModel } from '../interface/chatModel';
@@ -12,10 +12,10 @@ vi.mock('../db/mysql/transaction', () => ({
 }));
 
 describe('FriendshipService', () => {
-  let mockFriendshipModel: vi.Mocked<IFriendshipModel>;
-  let mockChatModel: vi.Mocked<IChatModel>;
-  let mockUserInfoModel: vi.Mocked<IUserInfoModel>;
-  let mockFriendshipChatModel: vi.Mocked<IFriendshipChatModel>;
+  let mockFriendshipModel: Mocked<IFriendshipModel>;
+  let mockChatModel: Mocked<IChatModel>;
+  let mockUserInfoModel: Mocked<IUserInfoModel>;
+  let mockFriendshipChatModel: Mocked<IFriendshipChatModel>;
   let friendshipService: FriendshipService;
 
   beforeEach(() => {

@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 import { AuthController } from './authController';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
 
 describe('AuthController', () => {
-  let mockAuthService: vi.Mocked<AuthService>;
+  let mockAuthService: Mocked<AuthService>;
   let authController: AuthController;
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
