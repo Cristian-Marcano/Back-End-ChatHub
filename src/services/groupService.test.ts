@@ -20,18 +20,31 @@ describe('GroupService', () => {
     vi.clearAllMocks();
 
     mockChatModel = {
-      createGroupChat: vi.fn(),
-    };
+      createChat: vi.fn(),
+      getChats: vi.fn(),
+      getChatById: vi.fn(),
+      getChatsByName: vi.fn(),
+      removeChat: vi.fn(),
+      getChatMembers: vi.fn(),
+    } as unknown as Mocked<IChatModel>;
 
     mockGroupModel = {
       createGroup: vi.fn(),
       addMember: vi.fn(),
       getGroupMembers: vi.fn(),
       removeMember: vi.fn(),
-      getGroupInfo: vi.fn(),
-    };
+      getGroupByChatId: vi.fn(),
+      updateMemberRole: vi.fn(),
+      updateGroupSettings: vi.fn(),
+    } as unknown as Mocked<IGroupModel>;
 
-    mockUserInfoModel = {};
+    mockUserInfoModel = {
+      getUserInfoById: vi.fn(),
+      getUsersInfo: vi.fn(),
+      createUserInfo: vi.fn(),
+      updateUserInfo: vi.fn(),
+      upsertUserInfo: vi.fn(),
+    } as unknown as Mocked<IUserInfoModel>;
 
     groupService = new GroupService({
       chatModel: mockChatModel,
@@ -44,25 +57,25 @@ describe('GroupService', () => {
     it('should throw an error if the requester is not an admin', async () => {
       // Mock requester is a regular member
       mockGroupModel.getGroupMembers.mockResolvedValue([
-        { member_id: 'req1', role: 'member' },
-        { member_id: 'tar1', role: 'member' }
-      ]);
+        { member_id: '123e4567-e89b-12d3-a456-426614174001', role: 'member' },
+        { member_id: '123e4567-e89b-12d3-a456-426614174002', role: 'member' }
+      ] as any);
       
       await expect(
-        groupService.kickMember({ chatId: 1, requesterId: 'req1', targetId: 'tar1' })
+        groupService.kickMember({ chatId: 1, requesterId: '123e4567-e89b-12d3-a456-426614174001', targetId: '123e4567-e89b-12d3-a456-426614174002' })
       ).rejects.toThrow('Not authorized');
     });
 
     it('should successfully kick member if requester is an admin or owner', async () => {
       // Mock requester is an admin
       mockGroupModel.getGroupMembers.mockResolvedValue([
-        { member_id: 'req1', role: 'admin' },
-        { member_id: 'tar1', role: 'member' }
-      ]);
+        { member_id: '123e4567-e89b-12d3-a456-426614174001', role: 'admin' },
+        { member_id: '123e4567-e89b-12d3-a456-426614174002', role: 'member' }
+      ] as any);
       
-      await groupService.kickMember({ chatId: 1, requesterId: 'req1', targetId: 'tar1' });
+      await groupService.kickMember({ chatId: 1, requesterId: '123e4567-e89b-12d3-a456-426614174001', targetId: '123e4567-e89b-12d3-a456-426614174002' });
       
-      expect(mockGroupModel.removeMember).toHaveBeenCalledWith({ input: { chatId: 1 }, memberId: 'tar1' });
+      expect(mockGroupModel.removeMember).toHaveBeenCalledWith({ input: { chatId: 1 }, memberId: '123e4567-e89b-12d3-a456-426614174002' });
     });
   });
 });

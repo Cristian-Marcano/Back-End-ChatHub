@@ -25,16 +25,35 @@ describe('FriendshipService', () => {
       createFriendship: vi.fn(),
       updateFriendship: vi.fn(),
       getFriendshipById: vi.fn(),
-    };
+      getFriendshipsByUserId: vi.fn(),
+      removeFriendship: vi.fn(),
+    } as unknown as Mocked<IFriendshipModel>;
 
     mockChatModel = {
       createChat: vi.fn(),
-    };
+      getChats: vi.fn(),
+      getChatById: vi.fn(),
+      getChatsByName: vi.fn(),
+      removeChat: vi.fn(),
+      getChatMembers: vi.fn(),
+    } as unknown as Mocked<IChatModel>;
 
-    mockUserInfoModel = {};
+    mockUserInfoModel = {
+      getUserInfoById: vi.fn(),
+      getUsersInfo: vi.fn(),
+      createUserInfo: vi.fn(),
+      updateUserInfo: vi.fn(),
+      upsertUserInfo: vi.fn(),
+    } as unknown as Mocked<IUserInfoModel>;
+
     mockFriendshipChatModel = {
       createFriendshipChat: vi.fn(),
-    };
+      getFriendshipChats: vi.fn(),
+      getFriendshipChatsByName: vi.fn(),
+      updateFriendshipChat: vi.fn(),
+      removeFriendshipChat: vi.fn(),
+      getFriendshipIdByChatId: vi.fn(),
+    } as unknown as Mocked<IFriendshipChatModel>;
 
     friendshipService = new FriendshipService({
       friendshipModel: mockFriendshipModel,
@@ -48,9 +67,9 @@ describe('FriendshipService', () => {
     it('should create a friendship via the model', async () => {
       mockFriendshipModel.createFriendship.mockResolvedValue(10);
       
-      const res = await friendshipService.sentFriendship({ input: { primary_user_id: 'user1', secondary_user_id: 'user2' } as any });
+      const res = await friendshipService.sentFriendship({ input: { primary_user_id: '123e4567-e89b-12d3-a456-426614174001', secondary_user_id: '123e4567-e89b-12d3-a456-426614174002' } as any });
       
-      expect(mockFriendshipModel.createFriendship).toHaveBeenCalledWith({ input: { primary_user_id: 'user1', secondary_user_id: 'user2' } });
+      expect(mockFriendshipModel.createFriendship).toHaveBeenCalledWith({ input: { primary_user_id: '123e4567-e89b-12d3-a456-426614174001', secondary_user_id: '123e4567-e89b-12d3-a456-426614174002' } });
       expect(res).toBe(10);
     });
   });
@@ -58,7 +77,7 @@ describe('FriendshipService', () => {
   describe('acceptFriendship', () => {
     it('should update state, create chat, and create relations', async () => {
       mockChatModel.createChat.mockResolvedValue(55);
-      mockFriendshipModel.getFriendshipById.mockResolvedValue([{ primary_user_id: 'user1', secondary_user_id: 'user2' }]);
+      mockFriendshipModel.getFriendshipById.mockResolvedValue([{ primary_user_id: '123e4567-e89b-12d3-a456-426614174001', secondary_user_id: '123e4567-e89b-12d3-a456-426614174002' } as any]);
 
       await friendshipService.acceptFriendship({ id: 10 });
       

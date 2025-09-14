@@ -32,19 +32,30 @@ describe('AuthService', () => {
     vi.clearAllMocks();
 
     mockUserModel = {
-      register: vi.fn(),
+      getUser: vi.fn(),
+      getAllUsers: vi.fn(),
+      getUserById: vi.fn(),
       getUserByUsernameOrEmail: vi.fn(),
-      checkIfExist: vi.fn(),
-    };
+      createUser: vi.fn(),
+      updateUser: vi.fn(),
+      updatePassword: vi.fn(),
+    } as unknown as Mocked<IUserModel>;
 
     mockTempEmailsModel = {
+      getTempEmail: vi.fn(),
+      getTempEmailByEmail: vi.fn(),
       createTempEmail: vi.fn(),
-      validateCode: vi.fn(),
-    };
+      updateTempEmail: vi.fn(),
+      updateTempEmailCod: vi.fn(),
+      removeTempEmail: vi.fn(),
+    } as unknown as Mocked<ITempEmailsModel>;
 
     mockRefreshTokensModel = {
       createRefreshToken: vi.fn(),
-    };
+      getValidToken: vi.fn(),
+      revokeToken: vi.fn(),
+      revokeAllUserTokens: vi.fn(),
+    } as unknown as Mocked<IRefreshTokensModel>;
 
     authService = new AuthService({
       userModel: mockUserModel,
@@ -64,9 +75,9 @@ describe('AuthService', () => {
 
     it('should throw an error if password does not match', async () => {
       mockUserModel.getUserByUsernameOrEmail.mockResolvedValue([{
-        id: '123',
+        id: '123e4567-e89b-12d3-a456-426614174000',
         keyword: 'hashed-db-password'
-      }]);
+      }] as any);
       vi.mocked(passwordUtils.validateHashedPassword).mockResolvedValue(false);
       
       await expect(
@@ -76,9 +87,9 @@ describe('AuthService', () => {
 
     it('should successfully log in and return token and refreshToken', async () => {
       mockUserModel.getUserByUsernameOrEmail.mockResolvedValue([{
-        id: '123',
+        id: '123e4567-e89b-12d3-a456-426614174000',
         keyword: 'hashed-db-password'
-      }]);
+      }] as any);
       vi.mocked(passwordUtils.validateHashedPassword).mockResolvedValue(true);
       
       const res = await authService.loginUser({ input: { username: 'johndoe', password: 'correct' } });
