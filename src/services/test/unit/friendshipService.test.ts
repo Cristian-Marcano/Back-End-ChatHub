@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
-import { FriendshipService } from './friendshipService';
-import { IFriendshipModel } from '../interface/friendshipModel';
-import { IChatModel } from '../interface/chatModel';
-import { IUserInfoModel } from '../interface/userInfoModel';
-import { IFriendshipChatModel } from '../interface/friendshipChatModel';
+import { FriendshipService } from '../../friendshipService';
+import { IFriendshipModel } from '../../../interface/friendshipModel';
+import { IChatModel } from '../../../interface/chatModel';
+import { IUserInfoModel } from '../../../interface/userInfoModel';
+import { IFriendshipChatModel } from '../../../interface/friendshipChatModel';
 
-vi.mock('../db/mysql/transaction', () => ({
+vi.mock('../../../db/mysql/transaction', () => ({
   withTransaction: vi.fn(async (callback) => {
     return await callback({});
   }),

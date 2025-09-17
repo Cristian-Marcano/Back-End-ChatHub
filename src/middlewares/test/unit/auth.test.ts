@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { authMiddleware } from './auth';
-import * as tokenUtils from '../utils/token';
+import { authMiddleware } from '../../auth';
+import * as tokenUtils from '../../../utils/token';
 
-vi.mock('../utils/token', () => ({
+vi.mock('../../../utils/token', () => ({
   validateToken: vi.fn(),
 }));
 

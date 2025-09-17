@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mailTo } from './mailTo';
+import { mailTo } from '../../mailTo';
 import * as nodemailer from 'nodemailer';
 
 vi.mock('nodemailer', () => ({

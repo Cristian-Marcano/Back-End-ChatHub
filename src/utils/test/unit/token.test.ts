@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { assignToken, generateRandomToken } from './token';
+import { assignToken, generateRandomToken } from '../../token';
 import jwt from 'jsonwebtoken';
 
 vi.mock('jsonwebtoken', () => ({

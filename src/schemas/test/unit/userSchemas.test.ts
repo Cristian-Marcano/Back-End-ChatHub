@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateUser, validateUserRefine } from './userSchemas';
+import { validateUser, validateUserRefine } from '../../userSchemas';
 
 describe('User Schemas Validation', () => {
   it('should validate a correct registration payload (validateUser)', () => {

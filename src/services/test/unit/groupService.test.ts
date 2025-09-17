@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
-import { GroupService } from './groupService';
-import { IChatModel } from '../interface/chatModel';
-import { IGroupModel } from '../interface/groupModel';
-import { IUserInfoModel } from '../interface/userInfoModel';
+import { GroupService } from '../../groupService';
+import { IChatModel } from '../../../interface/chatModel';
+import { IGroupModel } from '../../../interface/groupModel';
+import { IUserInfoModel } from '../../../interface/userInfoModel';
 
-vi.mock('../db/mysql/transaction', () => ({
+vi.mock('../../../db/mysql/transaction', () => ({
   withTransaction: vi.fn(async (callback) => {
     return await callback({});
   }),

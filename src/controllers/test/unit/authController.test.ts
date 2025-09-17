@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
-import { AuthController } from './authController';
+import { AuthController } from '../../authController';
 import { Request, Response } from 'express';
-import { AuthService } from '../services/authService';
+import { AuthService } from '../../../services/authService';
 
 describe('AuthController', () => {
   let mockAuthService: Mocked<AuthService>;

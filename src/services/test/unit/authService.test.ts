@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
-import { AuthService } from './authService';
-import { IUserModel } from '../interface/userModel';
-import { ITempEmailsModel } from '../interface/tempEmailsModel';
-import { IRefreshTokensModel } from '../interface/refreshTokensModel';
-import * as passwordUtils from '../utils/password';
-import * as tokenUtils from '../utils/token';
-import * as mailToUtils from '../utils/mailTo';
+import { AuthService } from '../../authService';
+import { IUserModel } from '../../../interface/userModel';
+import { ITempEmailsModel } from '../../../interface/tempEmailsModel';
+import { IRefreshTokensModel } from '../../../interface/refreshTokensModel';
+import * as passwordUtils from '../../../utils/password';
+import * as tokenUtils from '../../../utils/token';
+import * as mailToUtils from '../../../utils/mailTo';
 
-vi.mock('../utils/password', () => ({
+vi.mock('../../../utils/password', () => ({
   genereteHashedPassword: vi.fn().mockResolvedValue('hashed-password'),
   validateHashedPassword: vi.fn(),
 }));
 
-vi.mock('../utils/token', () => ({
+vi.mock('../../../utils/token', () => ({
   assignToken: vi.fn().mockReturnValue('mock-jwt-token'),
   generateRandomToken: vi.fn().mockReturnValue('mock-refresh-token'),
 }));
