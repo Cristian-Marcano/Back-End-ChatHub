@@ -2,16 +2,19 @@ import { handleSocketError } from "../utils/socketErrorHandler"
 import { Server, Socket } from "socket.io"
 import { ChatService } from "../services/chatService"
 import { NotificationService } from "../services/notificationService"
+import { AiService } from "../services/aiService"
 import { validatePagination, validatePaginationName } from "../schemas/paginationSchemas"
 import { validateChatId, validateChatHistory, validateMessage, validateMessageView, validateMessageEdit, validateMessageDelete, validateMessageSearch, validateMessageContext } from "../schemas/messageSchemas"
 
 export class ChatController {
     private chatService: ChatService
     private notificationService?: NotificationService
+    private aiService?: AiService
 
-    constructor({chatService, notificationService}: {chatService: ChatService, notificationService?: NotificationService}) {
+    constructor({chatService, notificationService, aiService}: {chatService: ChatService, notificationService?: NotificationService, aiService?: AiService}) {
         this.chatService = chatService
         this.notificationService = notificationService
+        this.aiService = aiService
     }
 
     getAll = async(namespace:string, io: Server, socket: Socket, data: any): Promise<void> => {
@@ -94,6 +97,9 @@ export class ChatController {
         }
 
         try {
+            if (this.aiService) {
+                resultSchema.data.msgText = await this.aiService.censorText(resultSchema.data.msgText)
+            }
             const message = await this.chatService.sendMessageChat({input: resultSchema.data, id})
             const chatIdStr = resultSchema.data.chatId.toString()
             io.to(chatIdStr).emit(`${namespace}:newMessage`, {results: message})
@@ -171,6 +177,9 @@ export class ChatController {
         }
 
         try {
+            if (this.aiService) {
+                resultSchema.data.msgText = await this.aiService.censorText(resultSchema.data.msgText)
+            }
             await this.chatService.editMessageChat({input: resultSchema.data, id})
             // Emite al cuarto del chat que el mensaje fue editado
             io.to(resultSchema.data.chatId.toString()).emit(`${namespace}:messageEdited`, {
