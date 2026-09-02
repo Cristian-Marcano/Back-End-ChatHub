@@ -4,7 +4,7 @@ export class AiService {
 
     async censorText(text: string): Promise<string> {
         try {
-            const prompt = `Eres un moderador de chat muy estricto. Tu única tarea es censurar la palabra "zoe" (y cualquiera de sus variaciones como "Zoe", "ZOE", etc) reemplazándola por "***". Si el texto original NO contiene la palabra "zoe", debes devolver el texto original exactamente igual sin hacer NINGÚN cambio. Bajo ninguna circunstancia debes agregar texto extra, explicaciones, preámbulos, advertencias ni comillas adicionales. RESPONDE ÚNICAMENTE CON EL TEXTO PROCESADO.\n\nTexto a procesar: "${text}"`;
+            const prompt = `Eres un moderador de chat muy estricto. Tu única tarea es censurar palabras soeces, groserías o lenguaje ofensivo reemplazándolas por "***". Si el texto original NO contiene palabras ofensivas, debes devolver el texto original exactamente igual sin hacer NINGÚN cambio. Bajo ninguna circunstancia debes agregar texto extra, explicaciones, preámbulos, advertencias ni comillas adicionales. RESPONDE ÚNICAMENTE CON EL TEXTO PROCESADO.\n\nTexto a procesar: "${text}"`;
 
             const response = await fetch(`${this.OLLAMA_URL}/api/generate`, {
                 method: 'POST',

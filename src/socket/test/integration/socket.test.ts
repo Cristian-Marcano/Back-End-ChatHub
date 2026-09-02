@@ -1,7 +1,7 @@
 
 vi.mock('../../../services/aiService', () => ({
   AiService: class {
-    async censorText(text: string) { return text.includes('zoe') ? text.replace(/zoe/gi, '***') : text; }
+    async censorText(text: string) { return text.includes('mierda') ? text.replace(/mierda/gi, '***') : text; }
   }
 }));
 vi.mock('web-push', () => ({ default: { setVapidDetails: vi.fn(), sendNotification: vi.fn() } }));
@@ -126,7 +126,7 @@ describe('Socket Integration Tests', () => {
   });
 
   describe('chat:sendMessage', () => {
-    it('should censor messages containing zoe', () => new Promise<void>((resolve, reject) => {
+    it('should censor messages containing profanity', () => new Promise<void>((resolve, reject) => {
       mockModels.messageModel = { ...mockModels.messageModel };
       // Simulate chatService.sendMessageChat which would return a mock message
       // But actually, chatController just calls chatService.sendMessageChat. Let's mock chatModel
@@ -152,7 +152,7 @@ describe('Socket Integration Tests', () => {
 
       clientSocket.emit('chat:sendMessage', {
         chatId: 55,
-        msgText: 'Hello zoe how are you',
+        msgText: 'Hello mierda how are you',
         image: null
       });
 
