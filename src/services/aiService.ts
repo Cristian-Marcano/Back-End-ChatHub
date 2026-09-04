@@ -1,6 +1,6 @@
 export class AiService {
     private readonly OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
-    private readonly MODEL_NAME = 'qwen2.5:1.5b';
+    private readonly MODEL_NAME = 'qwen2.5-coder:1.5b';
 
     async censorText(text: string): Promise<string> {
         try {
@@ -20,7 +20,8 @@ export class AiService {
             });
 
             if (!response.ok) {
-                console.warn('Ollama API error, falling back to original text');
+                const errorText = await response.text();
+                console.warn(`Ollama API error (${response.status}): ${errorText}, falling back to original text`);
                 return text; // Fallback
             }
 
