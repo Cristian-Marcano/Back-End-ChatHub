@@ -4,21 +4,18 @@ export class AiService {
 
     async censorText(text: string): Promise<string> {
         try {
-            const prompt = `Eres un filtro de moderación automático. Tu tarea es reemplazar ÚNICAMENTE las palabras soeces, groserías o lenguaje ofensivo con "***", manteniendo EL RESTO DEL TEXTO ABSOLUTAMENTE INTACTO, palabra por palabra.
+            const prompt = `Eres un filtro de moderación automático. Tu tarea es reemplazar ÚNICAMENTE las palabras soeces, groserías o lenguaje ofensivo con "***". EL RESTO DEL TEXTO DEBE MANTENERSE ABSOLUTAMENTE INTACTO.
+
+Debes responder ÚNICAMENTE con un objeto JSON válido con una sola propiedad "censored_text" que contenga el resultado.
 
 Ejemplos:
-Texto original: "Hola, cómo estás?"
-"Hola, cómo estás?"
+Texto: "Hola, cómo estás?"
+{"censored_text": "Hola, cómo estás?"}
 
-Texto original: "Eres un completo idiota"
-"Eres un completo ***"
+Texto: "Eres un completo idiota"
+{"censored_text": "Eres un completo ***"}
 
-Texto original: "Esta mierda no funciona"
-"Esta *** no funciona"
-
-NO añadas explicaciones, introducciones ni comillas. RESPONDE SOLO CON EL TEXTO FILTRADO.
-
-Texto original: "\"${text}\""`;
+Texto: "${text}"`;
 
             const response = await fetch(`${this.OLLAMA_URL}/api/generate`, {
                 method: 'POST',
@@ -27,6 +24,7 @@ Texto original: "\"${text}\""`;
                     model: this.MODEL_NAME,
                     prompt: prompt,
                     stream: false,
+                    format: "json",
                     options: {
                         temperature: 0.1 // Low temperature for deterministic output
                     }
@@ -42,12 +40,30 @@ Texto original: "\"${text}\""`;
             const data = await response.json();
             
             // Clean up possible quotes added by the AI just in case
-            let result = data.response.trim();
-            if (result.startsWith('"') && result.endsWith('"') && result.length > 1) {
-                result = result.substring(1, result.length - 1);
+            let resultText = text;
+            try {
+                // Find the first { and last } to extract JSON in case the model adds extra text
+                const responseStr = data.response.trim();
+                const jsonStart = responseStr.indexOf('{');
+                const jsonEnd = responseStr.lastIndexOf('}');
+                
+                if (jsonStart !== -1 && jsonEnd !== -1) {
+                    const jsonStr = responseStr.substring(jsonStart, jsonEnd + 1);
+                    const parsed = JSON.parse(jsonStr);
+                    if (parsed.censored_text) {
+                        resultText = parsed.censored_text;
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to parse JSON from AI response, using original text');
+            }
+            
+            // Anti-hallucination safeguard for small models
+            if (resultText === '***' && text.split(' ').length > 1) {
+                return text;
             }
 
-            return result;
+            return resultText;
         } catch (error) {
             console.warn('Error communicating with AI service, returning original text:', error);
             return text; // Graceful degradation
