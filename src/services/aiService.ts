@@ -4,7 +4,7 @@ export class AiService {
 
     async censorText(text: string): Promise<string> {
         try {
-            const prompt = `Eres un filtro de moderación automático. Tu tarea es reemplazar ÚNICAMENTE las palabras soeces, groserías o lenguaje ofensivo con "***". EL RESTO DEL TEXTO DEBE MANTENERSE ABSOLUTAMENTE INTACTO.
+            const prompt = \`Eres un filtro de moderación automático. Tu tarea es reemplazar ÚNICAMENTE las palabras soeces, groserías o lenguaje ofensivo con "***". EL RESTO DEL TEXTO DEBE MANTENERSE ABSOLUTAMENTE INTACTO. No resumas ni cambies el sentido.
 
 Debes responder ÚNICAMENTE con un objeto JSON válido con una sola propiedad "censored_text" que contenga el resultado.
 
@@ -15,9 +15,12 @@ Texto: "Hola, cómo estás?"
 Texto: "Eres un completo idiota"
 {"censored_text": "Eres un completo ***"}
 
-Texto: "${text}"`;
+Texto: "Mira mamaguevo, que pajuo eres de verdad, te pasaste de verga"
+{"censored_text": "Mira ***, que *** eres de verdad, te pasaste de ***"}
 
-            const response = await fetch(`${this.OLLAMA_URL}/api/generate`, {
+Texto: "\${text}"\`;
+
+            const response = await fetch(\`\${this.OLLAMA_URL}/api/generate\`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -33,7 +36,7 @@ Texto: "${text}"`;
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.warn(`Ollama API error (${response.status}): ${errorText}, falling back to original text`);
+                console.warn(\`Ollama API error (\${response.status}): \${errorText}, falling back to original text\`);
                 return text; // Fallback
             }
 
@@ -59,7 +62,8 @@ Texto: "${text}"`;
             }
             
             // Anti-hallucination safeguard for small models
-            if (resultText === '***' && text.split(' ').length > 1) {
+            // If the model returns exactly "***" but the input was much longer (not just a single word), it hallucinated and replaced everything.
+            if (resultText === '***' && text.trim().split(/\\s+/).length > 2) {
                 return text;
             }
 

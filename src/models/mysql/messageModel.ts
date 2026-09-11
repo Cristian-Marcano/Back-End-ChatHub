@@ -8,7 +8,7 @@ class MessageModel implements IMessageModel {
     async getMessagesByChatId({input}: { input: ChatHistorySchema }): Promise<MessageUser[]> {
         const { chatId, page, limit } = input
         const sql = `SELECT * FROM (
-            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, uai.full_name AS nickname, uai.photo, IF(mv.id IS NOT NULL, 'read', 'sent') AS status 
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, ua.username, ua.email, uai.full_name AS nickname, uai.photo, IF(mv.id IS NOT NULL, 'read', 'sent') AS status 
             FROM message AS m 
             JOIN user_account AS ua ON m.user_sending_id = ua.id 
             LEFT JOIN user_account_info AS uai ON m.user_sending_id = uai.user_id
@@ -31,7 +31,7 @@ class MessageModel implements IMessageModel {
         const { chatId, msgText } = input
         const [result] = await pool.query('INSERT INTO message(chat_id, msg_text, user_sending_id) VALUES (?,?,UUID_TO_BIN(?))', [chatId, msgText, id]) as [ResultSetHeader, any]
         
-        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email 
+        const sql = `SELECT m.id AS id, BIN_TO_UUID(user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, ua.username, ua.email 
                     FROM message AS m JOIN user_account AS ua ON m.user_sending_id = ua.id WHERE m.id = ?`
         const [messages] = await pool.query(sql, [result.insertId]) as QueryResult as [MessageUser[]]
         return messages[0]
@@ -69,7 +69,7 @@ class MessageModel implements IMessageModel {
 
     async searchMessages({input}: {input: MessageSearchSchema}): Promise<MessageUser[]> {
         const { chatId, query, page, limit } = input
-        const sql = `SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
+        const sql = `SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
                     FROM message AS m 
                     JOIN user_account AS ua ON m.user_sending_id = ua.id 
                     LEFT JOIN message_view AS mv ON mv.message_id = m.id AND mv.user_id != m.user_sending_id
@@ -85,7 +85,7 @@ class MessageModel implements IMessageModel {
         // This query fetches up to 15 previous messages, the target message, and up to 15 next messages
         // using a UNION of three queries.
         const sql = `(
-            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
             FROM message AS m 
             JOIN user_account AS ua ON m.user_sending_id = ua.id 
             LEFT JOIN message_view AS mv ON mv.message_id = m.id AND mv.user_id != m.user_sending_id 
@@ -94,7 +94,7 @@ class MessageModel implements IMessageModel {
         )
         UNION
         (
-            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
             FROM message AS m 
             JOIN user_account AS ua ON m.user_sending_id = ua.id 
             LEFT JOIN message_view AS mv ON mv.message_id = m.id AND mv.user_id != m.user_sending_id 
@@ -102,7 +102,7 @@ class MessageModel implements IMessageModel {
         )
         UNION
         (
-            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, m.censored, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
+            SELECT m.id AS id, BIN_TO_UUID(m.user_sending_id) AS user_sending_id, m.chat_id, m.msg_text, m.create_at, m.update_at, ua.username, ua.email, IF(mv.id IS NOT NULL, 'read', 'sent') AS status
             FROM message AS m 
             JOIN user_account AS ua ON m.user_sending_id = ua.id 
             LEFT JOIN message_view AS mv ON mv.message_id = m.id AND mv.user_id != m.user_sending_id 
